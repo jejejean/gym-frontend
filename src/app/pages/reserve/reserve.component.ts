@@ -61,10 +61,12 @@ export class ReserveComponent implements OnInit {
       if (res.timeSlotResponse && res.timeSlotResponse.length > 0) {
         const firstSlot = res.timeSlotResponse[0];
         const lastSlot = res.timeSlotResponse[res.timeSlotResponse.length - 1];
-        timeRange = `${firstSlot.startTime} - ${lastSlot.endTime}`;
+        const start = firstSlot.startTime.slice(0, 5);
+        const end = lastSlot.endTime.slice(0, 5);
+        timeRange = `${start} - ${end}`;
       }
       return {
-        title: `Reserva ${timeRange}`,
+        title: `🗓️ Reserva ${timeRange}`,
         start: res.reservationDate,
         end: res.reservationDate,
       };

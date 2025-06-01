@@ -265,7 +265,6 @@ export class ModalReserveComponent implements OnInit {
         timeSlotId: timeSlotId,
         attendanceRequest: {},
       };
-      console.log('Reservation Request:', reservationRequest);
       this.reserveService.createReservation(reservationRequest).subscribe({
         next: (response) => {
           this.reserveStateService.addReserve(response);
