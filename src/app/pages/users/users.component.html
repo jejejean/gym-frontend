@@ -1,0 +1,154 @@
+<p-toast />
+<p-confirmdialog />
+<div class="pt-4">
+  <app-modal-user></app-modal-user>
+</div>
+
+<div class="card pt-4">
+  <p-table
+    #dt2
+    [value]="userData"
+    dataKey="id"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [paginator]="true"
+    [globalFilterFields]="[
+      'name',
+      'country.name',
+      'representative.name',
+      'status'
+    ]"
+    [tableStyle]="{ 'min-width': '75rem' }"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input
+            pInputText
+            type="text"
+            (input)="onGlobalFilter($event)"
+            placeholder="Search keyword"
+          />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 5%" scope="col">Estado</th>
+        <th scope="col">Nombres</th>
+        <th scope="col">Telefóno</th>
+        <th scope="col">Correo</th>
+        <th scope="col">Plan</th>
+        <th scope="col">Inicio</th>
+        <th scope="col">Fin</th>
+        <th scope="col">Duración</th>
+      </tr>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">
+          <p-columnFilter
+            type="text"
+            field="username"
+            placeholder="Buscar por nombre"
+          ></p-columnFilter>
+        </th>
+        <th scope="col">
+          <p-columnFilter
+            type="text"
+            field="phone"
+            placeholder="Buscar por teléfono"
+          ></p-columnFilter>
+        </th>
+        <th scope="col">
+          <p-columnFilter
+            type="text"
+            field="email"
+            placeholder="Buscar por correo"
+          ></p-columnFilter>
+        </th>
+        <th scope="col">
+          <p-columnFilter
+            type="text"
+            field="planName"
+            placeholder="Buscar por Plan"
+          ></p-columnFilter>
+        </th>
+        <th scope="col">
+          <p-columnFilter
+            type="text"
+            field="planStartDate"
+            placeholder="Buscar por fecha de inicio"
+          ></p-columnFilter>
+        </th>
+        <th scope="col">
+          <p-columnFilter
+            type="text"
+            field="planEndDate"
+            placeholder="Buscar por fecha de fin"
+          ></p-columnFilter>
+        </th>
+        <th scope="col">
+          <p-columnFilter
+            type="text"
+            field="planDuration"
+            placeholder="Buscar por Duración en días"
+          ></p-columnFilter>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-userData>
+      <tr>
+        <td class="flex justify-center">
+          <p-tag
+            [value]="userData.status"
+            [severity]="userData.status === 'Inactivo' ? 'danger' : 'success'"
+          />
+        </td>
+        <td>
+          <div class="flex items-center gap-2">
+            <img
+              *ngIf="userData.userProfileResponse.sex == 'Femenino'"
+              class="w-8"
+              alt="women"
+              src="/assets/images/women.png"
+            />
+            <img
+              *ngIf="userData.userProfileResponse.sex == 'Masculino'"
+              class="w-8"
+              alt="men"
+              src="/assets/images/men.png"
+            />
+            <span>{{ userData.username }}</span>
+          </div>
+        </td>
+        <td>
+          {{ userData.phone }}
+        </td>
+        <td>
+          {{ userData.email }}
+        </td>
+        <td>
+          {{ userData.userPlansResponse[0]?.planTypeResponse.name }}
+        </td>
+        <td>
+          {{ userData.userPlansResponse[0]?.startDate | date : "dd/MM/yyyy" }}
+        </td>
+        <td>
+          {{ userData.userPlansResponse[0]?.endDate | date : "dd/MM/yyyy" }}
+        </td>
+        <td>
+          {{ userData.userPlansResponse[0]?.planTypeResponse.durationDays }}
+          Días
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5">No userDatas found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

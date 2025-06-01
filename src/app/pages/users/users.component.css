@@ -1,0 +1,5 @@
+:host ::ng-deep .p-column-filter .p-inputtext {
+  font-size: 0.75rem; /* text-xs */
+  padding: 0.25rem 0.5rem; /* py-1 px-2 */
+  height: 1.75rem; /* h-7 */
+}

@@ -1,0 +1,236 @@
+<div class="pt-4">
+  <form *ngIf="userForm" [formGroup]="userForm" (ngSubmit)="onSubmitUser()">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="col-span-2">
+        <div class="flex justify-center">
+          <p-image
+            *ngIf="
+              userForm.get('userProfileResponse.sex')?.value == 'Masculino'
+            "
+            src="/assets/images/men.png"
+            alt="Image"
+            width="250"
+            [preview]="true"
+          />
+          <p-image
+            *ngIf="userForm.get('userProfileResponse.sex')?.value == 'Femenino'"
+            [src]="'../../../assets/images/women.png'"
+            alt="Image"
+            width="250"
+            [preview]="true"
+          />
+        </div>
+        <div class="flex flex-col">
+          <label class="font-medium" for="username">Nombres</label>
+          <input
+            pInputText
+            id="username"
+            formControlName="username"
+            [readonly]="!isEditMode"
+          />
+          <app-form-error
+            [control]="userForm.get('username')"
+            [validationMessage]="'El nombre de usuario es requerido'"
+          ></app-form-error>
+        </div>
+        <div class="flex flex-col">
+          <label class="font-medium" for="phone">Teléfono</label>
+          <p-inputnumber
+            mode="decimal"
+            inputId="phone"
+            formControlName="phone"
+            [readonly]="!isEditMode"
+            [useGrouping]="false"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                userForm.get('phone')?.touched && userForm.get('phone')?.invalid
+            }"
+          />
+          <app-form-error
+            [control]="userForm.get('phone')"
+            [validationMessage]="'El teléfono es requerido'"
+            [maxMessage]="'El teléfono debe tener 9 dígitos'"
+          ></app-form-error>
+        </div>
+        <div class="flex flex-col">
+          <label class="font-medium" for="email">Correo</label>
+          <input
+            pInputText
+            id="email"
+            formControlName="email"
+            [readonly]="!isEditMode"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                userForm.get('email')?.touched && userForm.get('email')?.invalid
+            }"
+          />
+          <app-form-error
+            [control]="userForm.get('email')"
+            [validationMessage]="'El correo es requerido'"
+          ></app-form-error>
+        </div>
+      </div>
+
+      <div class="col-span-2 md:col-span-1" formArrayName="userPlansResponse">
+        <div
+          *ngFor="let userPlan of userPlansResponse.controls; let i = index"
+          [formGroupName]="i"
+        >
+          <div class="flex flex-col">
+            <label class="font-medium" [for]="'planType' + i"
+              >Tipo de Plan</label
+            >
+            <input
+              readonly
+              pInputText
+              [value]="userPlan.get('planTypeResponse.name')?.value"
+            />
+            <app-form-error
+              [control]="userPlan.get('planTypeId')"
+              [validationMessage]="'El tipo de plan es requerido'"
+            ></app-form-error>
+          </div>
+          <div class="flex flex-col">
+            <label class="font-medium" [for]="'planType' + i"
+              >Duración del Plan</label
+            >
+            <input
+              readonly
+              pInputText
+              [value]="
+                userPlan.get('planTypeResponse.durationDays')?.value + ' Días'
+              "
+            />
+          </div>
+          <div class="flex flex-col">
+            <label class="font-medium" [for]="'startDate' + i"
+              >Inicio del Plan</label
+            >
+            <p-datepicker
+              [inputId]="'startDate' + i"
+              formControlName="startDate"
+              showIcon
+              iconDisplay="input"
+              styleClass="w-full"
+              dateFormat="dd/mm/yy"
+              [appendTo]="'body'"
+              [ngClass]="{
+                'ng-invalid ng-dirty':
+                  userPlan.get('startDate')?.touched &&
+                  userPlan.get('startDate')?.invalid
+              }"
+            />
+            <app-form-error
+              [control]="userPlan.get('startDate')"
+              [validationMessage]="'La fecha es requerida'"
+            ></app-form-error>
+          </div>
+          <div class="flex flex-col">
+            <label class="font-medium" [for]="'endDate' + i"
+              >Fin del Plan</label
+            >
+            <p-datepicker
+              [inputId]="'endDate' + i"
+              formControlName="endDate"
+              showIcon
+              iconDisplay="input"
+              styleClass="w-full"
+              dateFormat="dd/mm/yy"
+              [appendTo]="'body'"
+              [ngClass]="{
+                'ng-invalid ng-dirty':
+                  userPlan.get('endDate')?.touched &&
+                  userPlan.get('endDate')?.invalid
+              }"
+            />
+            <app-form-error
+              [control]="userPlan.get('endDate')"
+              [validationMessage]="'La fecha es requerida'"
+            ></app-form-error>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="col-span-2 md:col-span-1"
+        [formGroupName]="'userProfileResponse'"
+      >
+        <div class="flex flex-col">
+          <label class="font-medium" for="sex">Sexo</label>
+          <input
+            readonly
+            formControlName="sex"
+            pInputText
+            [readonly]="!isEditMode"
+          />
+          <app-form-error
+            [control]="userForm.get('userProfileResponse.sex')"
+            [validationMessage]="'El sexo es requerido'"
+          ></app-form-error>
+        </div>
+        <div class="flex flex-col">
+          <label class="font-medium" for="weight">Peso </label>
+          <p-inputnumber
+            formControlName="weight"
+            mode="decimal"
+            inputId="weight"
+            suffix=" kg"
+            [readonly]="!isEditMode"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                userForm.get('userProfileResponse.weight')?.touched &&
+                userForm.get('userProfileResponse.weight')?.invalid
+            }"
+          />
+          <app-form-error
+            [control]="userForm.get('userProfileResponse.weight')"
+            [validationMessage]="'El peso es requerido'"
+          ></app-form-error>
+        </div>
+        <div class="flex flex-col">
+          <label class="font-medium" for="height">Altura</label>
+          <p-inputnumber
+            mode="decimal"
+            formControlName="height"
+            inputId="height"
+            suffix=" m"
+            [readonly]="!isEditMode"
+            [ngClass]="{
+              'ng-invalid ng-dirty':
+                userForm.get('userProfileResponse.height')?.touched &&
+                userForm.get('userProfileResponse.height')?.invalid
+            }"
+          />
+          <app-form-error
+            [control]="userForm.get('userProfileResponse.height')"
+            [validationMessage]="'La altura es requerida'"
+          ></app-form-error>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-center col-span-2 gap-2 mt-4">
+      <p-button
+        *ngIf="!isEditMode"
+        label="EDITAR PERFIL"
+        type="button"
+        styleClass="bg-[#0b3954] hover:bg-[#0b3954de] border-[#0b3954]"
+        (click)="onEditPerfil()"
+      ></p-button>
+      <ng-container *ngIf="isEditMode">
+        <p-button
+          label="CANCELAR"
+          type="button"
+          styleClass=" col-span-2 bg-red-600 hover:bg-red-500 border-red-600"
+          (click)="onCancelEdit()"
+        ></p-button>
+        <p-button
+          label="GUARDAR"
+          type="submit"
+          class="flex justify-center col-span-2"
+          styleClass=" col-span-2 bg-green-600 hover:bg-green-500 border-green-600"
+        />
+      </ng-container>
+    </div>
+  </form>
+</div>

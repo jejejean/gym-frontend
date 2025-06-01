@@ -13,7 +13,7 @@ export const routes: Routes = [
     path: 'main',
     loadComponent: () =>
       import('./pages/main/main.component').then((m) => m.MainComponent),
-    //canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'reserve',
@@ -24,11 +24,24 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'users',
+        title: 'Usuarios',
+        loadComponent: () =>
+          import('./pages/users/users.component').then((m) => m.UsersComponent),
+      },
+      {
+        path: 'user/pefil',
+        title: 'Actualizar Usuario',
+        loadComponent: () =>
+          import('./pages/perfil-user/perfil-user.component').then(
+            (m) => m.PerfilUserComponent
+          ),
+      },
+      {
         path: '',
         redirectTo: 'reserve',
         pathMatch: 'full',
       },
-      
     ],
   },
   {

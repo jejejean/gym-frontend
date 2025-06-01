@@ -1,15 +1,25 @@
 export const REQUEST_MAPPING = 'api/v1';
-export const ENTITY_API_ENDPOINTS = `${REQUEST_MAPPING}/entity`;
-
+export const USER_API_ENDPOINTS = `${REQUEST_MAPPING}/user`;
+export const RESERVE_API_ENDPOINTS = `${REQUEST_MAPPING}/reserve`;
 export const LOGIN_API_ENDPOINTS = {
   REQUEST_MAPPING: 'auth',
   LOGIN: 'login',
 };
 
-export const ENTITY = {
-  GET_ALL: `${ENTITY_API_ENDPOINTS}/all-entities`,
-  GET_BY_ID: ENTITY_API_ENDPOINTS,
-  CREATE: `${ENTITY_API_ENDPOINTS}/new-entity`,
-  UPDATE: `${ENTITY_API_ENDPOINTS}/update-entity`,
-  DELETE: `${ENTITY_API_ENDPOINTS}/delete-entity`,
-}
+export const RESERVE = {
+  GET_ALL: `${RESERVE_API_ENDPOINTS}`,
+  GET_BY_ID: `${RESERVE_API_ENDPOINTS}`,
+  GET_ALL_BY_USER: `${RESERVE_API_ENDPOINTS}/user`,
+  CREATE: `${RESERVE_API_ENDPOINTS}/create`,
+  UPDATE: `${RESERVE_API_ENDPOINTS}/update`,
+  DELETE: `${RESERVE_API_ENDPOINTS}/delete`,
+};
+
+export const USER = {
+  GET_ALL: `${USER_API_ENDPOINTS}`,
+  GET_ALL_BY_USER_TYPE: `${USER_API_ENDPOINTS}/userType`,
+  GET_BY_ID: `${USER_API_ENDPOINTS}`,
+  CREATE: `${USER_API_ENDPOINTS}/create`,
+  UPDATE: `${USER_API_ENDPOINTS}/update`,
+  DELETE: `${USER_API_ENDPOINTS}/delete`,
+};

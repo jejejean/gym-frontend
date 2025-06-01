@@ -1,0 +1,124 @@
+<p-button
+  label="AGREGAR"
+  icon="pi pi-plus"
+  styleClass="bg-[#0b3954] hover:bg-[#0b3954de] border-[#0b3954] flex justify-star"
+  (click)="openModalReserve()"
+/>
+<p-dialog
+  [(visible)]="modalReserve"
+  [modal]="true"
+  [closable]="true"
+  closeOnEscape="false"
+  [style]="{ width: '35vw' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  draggable="false"
+  header="Realizar Reserva"
+  (onHide)="closeModalReserve()"
+>
+  <p-divider class="mt-0" />
+  <form [formGroup]="reservationForm" (ngSubmit)="onSubmitReserve()">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="flex flex-col">
+        <label class="font-medium" for="reservationDate">Fecha</label>
+        <p-datepicker
+          formControlName="reservationDate"
+          inputId="reservationDate"
+          showIcon
+          iconDisplay="input"
+          styleClass="w-full"
+          dateFormat="dd/mm/yy"
+          [minDate]="minDate"
+          [maxDate]="maxDate"
+          [disabledDates]="disabledDates"
+          [appendTo]="'body'"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              reservationForm.get('reservationDate')?.touched &&
+              reservationForm.get('reservationDate')?.invalid
+          }"
+        />
+        <app-form-error
+          [control]="reservationForm.get('reservationDate')"
+          [validationMessage]="'La fecha es requerida'"
+        ></app-form-error>
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium" for="day">Día</label>
+        <input pInputText id="day" formControlName="day" />
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium" for="startTime">Hora inicio</label>
+        <p-select
+          fluid
+          formControlName="startTime"
+          id="startTime"
+          [options]="filteredStartSlots"
+          optionLabel="startTime"
+          optionValue="startTime"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="'Seleccione una hora de inicio'"
+          [appendTo]="'body'"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              reservationForm.get('startTime')?.touched &&
+              reservationForm.get('startTime')?.invalid
+          }"
+        />
+        <app-form-error
+          [control]="reservationForm.get('startTime')"
+          [validationMessage]="'La hora de inicio es requerida'"
+        ></app-form-error>
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium" for="endTime">Hora fin</label>
+        <p-select
+          fluid
+          formControlName="endTime"
+          id="endTime"
+          [options]="filteredEndSlots"
+          optionLabel="endTime"
+          optionValue="endTime"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="'Seleccione una hora de inicio'"
+          [appendTo]="'body'"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              reservationForm.get('endTime')?.touched &&
+              reservationForm.get('endTime')?.invalid
+          }"
+        />
+        <app-form-error
+          [control]="reservationForm.get('endTime')"
+          [validationMessage]="'La hora de fin es requerida'"
+        ></app-form-error>
+      </div>
+      <div class="flex flex-col md:col-span-2">
+        <label class="font-medium" for="details">Detalle</label>
+        <input
+          type="text"
+          id="details"
+          pInputText
+          formControlName="details"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              reservationForm.get('details')?.touched &&
+              reservationForm.get('details')?.invalid
+          }"
+        />
+        <app-form-error
+          [control]="reservationForm.get('details')"
+          [maxMessage]="'La descripción debe tener como máximo 200 caracteres'"
+        ></app-form-error>
+      </div>
+    </div>
+    <p-button
+      label="RESERVAR"
+      type="submit"
+      icon="pi pi-save"
+      class="flex justify-center col-span-2"
+      styleClass=" col-span-2 bg-green-600 hover:bg-green-500 border-green-600"
+    />
+  </form>
+</p-dialog>
