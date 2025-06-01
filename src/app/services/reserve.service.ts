@@ -43,4 +43,9 @@ export class ReserveService {
     const url = `${this.apiBaseUrl}/${RESERVE.DELETE}/${id}`;
     return this.httpClient.delete(url, { responseType: 'text' });
   }
+
+  getReservationDatesByUser(userId: number): Observable<string[]> {
+    const url = `${this.apiBaseUrl}/${RESERVE.GET_DATES_BY_USER}/${userId}`;
+    return this.httpClient.get<string[]>(url);
+  }
 }

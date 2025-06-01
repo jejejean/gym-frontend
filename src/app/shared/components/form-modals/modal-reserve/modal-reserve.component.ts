@@ -17,6 +17,7 @@ import { timeSlots } from '@shared/data/timeSlot';
 import { ReserveRequest } from '@interfaces/reserve';
 import { SelectModule } from 'primeng/select';
 import { ReserveService } from '@services/reserve.service';
+import { ReserveStateService } from '@pages/reserve/reserve-state.service';
 
 @Component({
   selector: 'app-modal-reserve',
@@ -39,6 +40,7 @@ export class ModalReserveComponent implements OnInit {
   formBuilder = inject(FormBuilder);
   toastr = inject(ToastrService);
   reserveService = inject(ReserveService);
+  reserveStateService = inject(ReserveStateService);
 
   reservationForm!: FormGroup;
   modalReserve: boolean = false;
@@ -156,7 +158,21 @@ export class ModalReserveComponent implements OnInit {
         }
       });
   }
-
+  findFirstAvailableDate(): Date {
+    let date = new Date(this.minDate);
+    while (
+      date <= this.maxDate &&
+      this.disabledDates.some(
+        (d) =>
+          d.getFullYear() === date.getFullYear() &&
+          d.getMonth() === date.getMonth() &&
+          d.getDate() === date.getDate()
+      )
+    ) {
+      date.setDate(date.getDate() + 1);
+    }
+    return date > this.maxDate ? this.minDate : date;
+  }
   filterEndSlots() {
     this.reservationForm
       .get('endTime')
@@ -209,7 +225,32 @@ export class ModalReserveComponent implements OnInit {
     return this.timeSlots;
   }
 
-  
+  loadReservedDates() {
+    this.reserveService
+      .getReservationDatesByUser(this.userId)
+      .subscribe((dates: string[]) => {
+        this.disabledDates = dates.map((d) => {
+          const [day, month, year] = d.split('/').map(Number);
+          return new Date(year, month - 1, day);
+        });
+
+        // Busca la primera fecha disponible y actualiza el formulario
+        const firstAvailable = this.findFirstAvailableDate();
+        this.reservationForm.get('reservationDate')?.setValue(firstAvailable);
+        const dayName =
+          firstAvailable
+            .toLocaleDateString('es-ES', { weekday: 'long' })
+            .charAt(0)
+            .toUpperCase() +
+          firstAvailable
+            .toLocaleDateString('es-ES', { weekday: 'long' })
+            .slice(1);
+        this.reservationForm
+          .get('day')
+          ?.setValue(dayName, { emitEvent: false });
+      });
+  }
+
   onSubmitReserve() {
     if (this.reservationForm.valid) {
       const { reservationDate, details, startTime, endTime } =
@@ -227,6 +268,7 @@ export class ModalReserveComponent implements OnInit {
       console.log('Reservation Request:', reservationRequest);
       this.reserveService.createReservation(reservationRequest).subscribe({
         next: (response) => {
+          this.reserveStateService.addReserve(response);
           this.toastr.success('Se ha registrado la reserva', 'Reservado');
           this.closeModalReserve();
         },
@@ -241,10 +283,21 @@ export class ModalReserveComponent implements OnInit {
 
   openModalReserve() {
     this.modalReserve = true;
+    this.loadReservedDates();
   }
 
   closeModalReserve() {
     this.reservationForm.reset();
+    const firstAvailable = this.findFirstAvailableDate();
+    this.reservationForm.get('reservationDate')?.setValue(firstAvailable);
+    const dayName =
+      firstAvailable
+        .toLocaleDateString('es-ES', { weekday: 'long' })
+        .charAt(0)
+        .toUpperCase() +
+      firstAvailable.toLocaleDateString('es-ES', { weekday: 'long' }).slice(1);
+    this.reservationForm.get('day')?.setValue(dayName, { emitEvent: false });
+
     this.modalReserve = false;
   }
 }

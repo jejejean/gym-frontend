@@ -9,6 +9,7 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ReserveService } from '@services/reserve.service';
 import { ReserveResponse } from '@interfaces/reserve';
+import { ReserveStateService } from './reserve-state.service';
 @Component({
   selector: 'app-reserve',
   standalone: true,
@@ -25,17 +26,26 @@ import { ReserveResponse } from '@interfaces/reserve';
 export class ReserveComponent implements OnInit {
   toastr = inject(ToastrService);
   reserveService = inject(ReserveService);
+  reserveStateService = inject(ReserveStateService);
 
-  reservationsByUser!: ReserveResponse[];
-  reservations: ReserveResponse[] = [];
+  //reservationsByUser!: ReserveResponse[];
+  //reservations: ReserveResponse[] = [];
   userId!: number;
 
   constructor() {}
 
   ngOnInit(): void {
     this.loadUserData();
-    this.getAllReservationByUser();
-    this.getAllReservation();
+
+    this.reserveStateService.getAllReservationByUser(this.userId);
+    this.reserveStateService.reserves$.subscribe(
+      (response: ReserveResponse[]) => {
+        this.calendarOptions = {
+          ...this.calendarOptions,
+          events: this.mapReservationsToEvents(response),
+        };
+      }
+    );
   }
 
   loadUserData() {
@@ -43,14 +53,6 @@ export class ReserveComponent implements OnInit {
     const { userPrincipal } = user;
     const { idUser } = userPrincipal;
     this.userId = idUser;
-  }
-
-  getAllReservation() {
-    this.reserveService.getAllReservations().subscribe({
-      next: (response) => {
-        this.reservations = response;
-      },
-    });
   }
 
   mapReservationsToEvents(reservations: ReserveResponse[]): any[] {
@@ -66,18 +68,6 @@ export class ReserveComponent implements OnInit {
         start: res.reservationDate,
         end: res.reservationDate,
       };
-    });
-  }
-
-  getAllReservationByUser() {
-    this.reserveService.getAllReservationsByUser(this.userId).subscribe({
-      next: (response) => {
-        this.reservationsByUser = response;
-        this.calendarOptions = {
-          ...this.calendarOptions,
-          events: this.mapReservationsToEvents(this.reservationsByUser),
-        };
-      },
     });
   }
 
