@@ -264,13 +264,25 @@ export class ReserveComponent implements OnInit {
         attendanceRequest: attendanceRequest,
       };
       console.log('reserveRequest', reserveRequest);
-      this.reserveService.updateReservation(this.idReserve, reserveRequest).subscribe({
-        next: (response) => {
-          this.reserveStateService.updateReserve(response, this.idReserve);
-          this.toastr.success('Reserva actualizada correctamente', 'Actualizado');
-          this.closeModalReserve();
-        },
-      })
+      this.reserveService
+        .updateReservation(this.idReserve, reserveRequest)
+        .subscribe({
+          next: (response) => {
+            this.reserveStateService.updateReserve(response, this.idReserve);
+            this.reserveStateService.getAllReservationByUser(this.userId);
+            this.reserveStateService.reserves$.subscribe((allReserves) => {
+              this.calendarOptions = {
+                ...this.calendarOptions,
+                events: this.mapReservationsToEvents(allReserves),
+              };
+            });
+            this.toastr.success(
+              'Reserva actualizada correctamente',
+              'Actualizado'
+            );
+            this.closeModalReserve();
+          },
+        });
     } else {
       this.reserveForm.markAllAsTouched();
     }
