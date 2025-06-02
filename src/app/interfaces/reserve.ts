@@ -4,7 +4,7 @@ export interface ReserveRequest {
   reservationDate: string;
   details: string;
   timeSlotId: number[];
-  attendanceRequest: any;
+  attendanceRequest: AttendanceRequest;
 }
 
 export interface ReserveResponse {
@@ -13,11 +13,23 @@ export interface ReserveResponse {
   reservationDate: string;
   details: string;
   timeSlotResponse: TimeSlotResponse[];
-  attendanceRequest: any;
+  attendanceResponse: AttendanceResponse;
 }
 
 export interface TimeSlotResponse {
   id: number;
   startTime: string;
   endTime: string;
+}
+
+export interface AttendanceRequest {
+  id: number;
+  attended: boolean;
+  checkinTime: string;
+}
+
+export interface AttendanceResponse {
+  id: number;
+  attended: boolean;
+  checkinTime: string;
 }

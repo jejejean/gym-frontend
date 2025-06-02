@@ -100,8 +100,6 @@ export class PerfilUserComponent implements OnInit {
     userdata.userPlansResponse.forEach((userPlans) => {
       userPlansList.push(this.initUserPlans(userPlans));
     });
-
-    console.log('initUserData', this.userForm.value);
   }
 
   initUserPlans(userPlans: UserPlansResponse): FormGroup {

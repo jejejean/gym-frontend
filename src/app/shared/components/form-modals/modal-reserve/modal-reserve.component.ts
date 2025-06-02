@@ -14,7 +14,7 @@ import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
 import { timeSlots } from '@shared/data/timeSlot';
-import { ReserveRequest } from '@interfaces/reserve';
+import { AttendanceRequest, ReserveRequest } from '@interfaces/reserve';
 import { SelectModule } from 'primeng/select';
 import { ReserveService } from '@services/reserve.service';
 import { ReserveStateService } from '@pages/reserve/reserve-state.service';
@@ -256,6 +256,12 @@ export class ModalReserveComponent implements OnInit {
       const { reservationDate, details, startTime, endTime } =
         this.reservationForm.getRawValue();
       const timeSlotId = this.getTimeSlotIds(startTime, endTime);
+      
+      const attendanceRequest: AttendanceRequest = {
+        id: 0,
+        attended: false,
+        checkinTime: '',
+      }
 
       const reservationRequest: ReserveRequest = {
         id: 0,
@@ -263,7 +269,7 @@ export class ModalReserveComponent implements OnInit {
         details: details,
         userId: this.userId,
         timeSlotId: timeSlotId,
-        attendanceRequest: {},
+        attendanceRequest: attendanceRequest,
       };
       this.reserveService.createReservation(reservationRequest).subscribe({
         next: (response) => {

@@ -1,0 +1,11 @@
+@media (min-width: 1024px) {
+  ::ng-deep .fc-event,
+  ::ng-deep .fc-daygrid-event,
+  ::ng-deep .fc-timegrid-event,
+  ::ng-deep .fc-list-event,
+  ::ng-deep .fc-v-event,
+  ::ng-deep .fc-h-event,
+  ::ng-deep .fc-event-title {
+    cursor: pointer !important;
+  }
+}

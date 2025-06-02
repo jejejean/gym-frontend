@@ -34,7 +34,7 @@ export class ReserveService {
     return this.httpClient.post<ReserveResponse>(url, reservation);
   }
 
-  updateReservation(id: number, reservation: ReserveResponse): Observable<ReserveResponse> {
+  updateReservation(id: number, reservation: ReserveRequest): Observable<ReserveResponse> {
     const url = `${this.apiBaseUrl}/${RESERVE.UPDATE}/${id}`;
     return this.httpClient.put<ReserveResponse>(url, reservation);
   }

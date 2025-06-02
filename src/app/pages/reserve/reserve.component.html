@@ -4,3 +4,79 @@
   <app-modal-reserve></app-modal-reserve>
   <full-calendar [options]="calendarOptions"></full-calendar>`,
 </div>
+
+<p-dialog
+  [(visible)]="modalReserve"
+  [modal]="true"
+  [closable]="true"
+  closeOnEscape="false"
+  [style]="{ width: '35vw' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  draggable="false"
+  header="Actualizar Tiempo de Reserva"
+  (onHide)="closeModalReserve()"
+>
+  <p-divider class="mt-0" />
+  <form
+    class="flex flex-col gap-2 p-3"
+    [formGroup]="reserveForm"
+    (ngSubmit)="onUpdateReserve()"
+  >
+    <div>
+      <div class="flex flex-col">
+        <label class="font-medium" for="startTime">Hora inicio</label>
+        <p-select
+          fluid
+          formControlName="startTime"
+          id="startTime"
+          [options]="filteredStartSlots"
+          optionLabel="startTime"
+          optionValue="startTime"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="'Seleccione una hora de inicio'"
+          [appendTo]="'body'"
+        />
+        <app-form-error
+          [control]="reserveForm.get('startTime')"
+          [validationMessage]="'La hora de inicio es requerida'"
+        ></app-form-error>
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium" for="endTime">Hora fin</label>
+        <p-select
+          fluid
+          formControlName="endTime"
+          id="endTime"
+          [options]="filteredEndSlots"
+          optionLabel="endTime"
+          optionValue="endTime"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="'Seleccione una hora de inicio'"
+          [appendTo]="'body'"
+        />
+        <app-form-error
+          [control]="reserveForm.get('endTime')"
+          [validationMessage]="'La hora de fin es requerida'"
+        ></app-form-error>
+      </div>
+    </div>
+
+    <div class="grid justify-center grid-cols-2 gap-3">
+      <p-button
+        label="ACTUALIZAR"
+        type="submit"
+        class="flex justify-end col-span-1"
+        styleClass=" col-span-2 bg-green-600 hover:bg-green-500 border-green-600"
+      />
+      <p-button
+        label="ELIMINAR"
+        type="button"
+        (click)="modalDeleteReserve($event, this.idReserve)"
+        class="flex justify-start col-span-1"
+        styleClass=" col-span-2 bg-red-600 hover:bg-red-500 border-red-600"
+      />
+    </div>
+  </form>
+</p-dialog>
