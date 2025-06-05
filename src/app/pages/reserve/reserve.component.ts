@@ -12,14 +12,12 @@ import {
   AttendanceRequest,
   ReserveRequest,
   ReserveResponse,
-  TimeSlotResponse,
 } from '@interfaces/reserve';
 import { ReserveStateService } from './reserve-state.service';
 import { DialogModule } from 'primeng/dialog';
 import { FormErrorComponent } from '../../shared/components/form-errors/form-error.component';
 import { ButtonModule } from 'primeng/button';
 import {
-  FormArray,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,

@@ -1,0 +1,194 @@
+<div class="card pt-4">
+  <p-table
+    #dt2
+    [value]="reserveData"
+    dataKey="id"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [paginator]="true"
+    [globalFilterFields]="[
+      'reserveData.userSimpleResponse.username',
+      'timeSlotResponse[0].startTime',
+      'timeSlotResponse[timeSlotResponse.length-1].endTime',
+      'attendanceResponse.attended'
+    ]"
+    [tableStyle]="{ 'min-width': '75rem' }"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon>
+            <i class="pi pi-search"></i>
+          </p-inputicon>
+          <input
+            pInputText
+            type="text"
+            (input)="onGlobalFilter($event)"
+            placeholder="Search keyword"
+          />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="text-center" style="width: 8%" scope="col">Estado</th>
+        <th class="text-center" scope="col">Asistencia</th>
+        <th scope="col">Nombres</th>
+        <th scope="col">Hora Inicio</th>
+        <th scope="col">Hora Fin</th>
+      </tr>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col">
+          <p-columnFilter
+            type="text"
+            field="userSimpleResponse.username"
+            placeholder="Buscar por nombre"
+          ></p-columnFilter>
+        </th>
+        <th scope="col">
+          <p-columnFilter
+            type="text"
+            field="timeSlotResponse[0].startTime"
+            placeholder="Buscar por hora inicio"
+          ></p-columnFilter>
+        </th>
+        <th scope="col">
+          <p-columnFilter
+            type="text"
+            field="timeSlotResponse[timeSlotResponse.length-1].endTime"
+            placeholder="Buscar hora fin"
+          ></p-columnFilter>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-reserveData>
+      <tr>
+        <td>
+          <p-tag
+            class="flex justify-center"
+            [value]="
+              reserveData.attendanceResponse.attended ? 'Asistió' : 'No asistió'
+            "
+            [severity]="
+              reserveData.attendanceResponse.attended ? 'success' : 'danger'
+            "
+          />
+        </td>
+        <td>
+          <div class="flex justify-center">
+            <p-button
+              icon="pi pi-calendar-clock"
+              styleClass="bg-[#0b3954] hover:bg-[#0b3954de] border-[#0b3954]"
+              (click)="getAttendance(35)"
+            />
+          </div>
+        </td>
+        <td>
+          <div class="flex items-center gap-2">
+            <img
+              *ngIf="
+                reserveData.userSimpleResponse.userProfileResponse.sex ==
+                'Femenino'
+              "
+              class="w-8"
+              alt="women"
+              src="/assets/images/women.png"
+            />
+            <img
+              *ngIf="
+                reserveData.userSimpleResponse.userProfileResponse.sex ==
+                'Masculino'
+              "
+              class="w-8"
+              alt="men"
+              src="/assets/images/men.png"
+            />
+            <span>{{ reserveData.userSimpleResponse.username }}</span>
+          </div>
+        </td>
+        <td>
+          {{ reserveData.timeSlotResponse[0]?.startTime?.slice(0, 5) }}
+        </td>
+        <td>
+          {{
+            reserveData.timeSlotResponse[
+              reserveData.timeSlotResponse.length - 1
+            ]?.endTime?.slice(0, 5)
+          }}
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5">No reserveDatas found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [(visible)]="modalAttendance"
+  [modal]="true"
+  [closable]="true"
+  closeOnEscape="false"
+  [style]="{ width: '35vw' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  draggable="false"
+  header="Registrar Asistencia"
+  (onHide)="closeModalAttendance()"
+>
+  <p-divider class="mt-0" />
+  <form
+    *ngIf="attendanceForm"
+    class="flex flex-col gap-2 p-3"
+    [formGroup]="attendanceForm"
+    (ngSubmit)="onUpdateAttendance()"
+  >
+    <div class="grid grid-cols-1 gap-3">
+      <div class="flex flex-col">
+        <label class="font-medium" for="checkinTime">Hora de Asistencia</label>
+        <p-datepicker
+          inputId="calendar-24h"
+          showIcon
+          styleClass="w-full"
+          dateFormat="dd/mm/yy"
+          formControlName="checkinTime"
+          [showTime]="true"
+          hourFormat="24"
+          [appendTo]="'body'"
+        />
+        <app-form-error
+          [control]="attendanceForm.get('checkinTime')"
+          [validationMessage]="'La hora de fin es requerida'"
+        ></app-form-error>
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium" for="attended">Estado</label>
+        <p-select
+          fluid
+          formControlName="attended"
+          id="attended"
+          [options]="states"
+          optionLabel="name"
+          optionValue="value"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="'Seleccione una hora de inicio'"
+          [appendTo]="'body'"
+        />
+        <app-form-error
+          [control]="attendanceForm.get('attended')"
+          [validationMessage]="'La hora de inicio es requerida'"
+        ></app-form-error>
+      </div>
+    </div>
+    <p-button
+      label="Marcar Asistencia"
+      type="submit"
+      class="flex mt-3 justify-center col-span-1"
+      styleClass="col-span-2 bg-green-600 hover:bg-green-500 border-green-600"
+    />
+  </form>
+</p-dialog>

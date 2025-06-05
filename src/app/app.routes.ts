@@ -30,6 +30,14 @@ export const routes: Routes = [
           import('./pages/users/users.component').then((m) => m.UsersComponent),
       },
       {
+        path: 'view-all-reserves',
+        title: 'Ver Reservas',
+        loadComponent: () =>
+          import('./pages/view-all-reserves/view-all-reserves.component').then(
+            (m) => m.ViewAllReservesComponent
+          ),
+      },
+      {
         path: 'user/pefil',
         title: 'Actualizar Usuario',
         loadComponent: () =>

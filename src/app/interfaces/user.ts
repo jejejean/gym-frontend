@@ -56,3 +56,12 @@ export interface PlanTypeResponse {
   durationDays: number;
   price: number;
 }
+
+export interface UserSimpleResponse {
+  idUser: number;
+  username: string;
+  email: string;
+  phone: string;
+  status: string;
+  userProfileResponse: UserProfileResponse;
+}

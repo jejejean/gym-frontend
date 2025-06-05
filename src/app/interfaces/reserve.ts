@@ -1,3 +1,5 @@
+import { UserSimpleResponse } from './user';
+
 export interface ReserveRequest {
   id: number;
   userId: number;
@@ -32,4 +34,18 @@ export interface AttendanceResponse {
   id: number;
   attended: boolean;
   checkinTime: string;
+}
+
+export interface ReserveByDayResponse {
+  id: number;
+  userSimpleResponse: UserSimpleResponse;
+  reservationDate: string;
+  details: string;
+  timeSlotResponse: TimeSlotResponse[];
+  attendanceResponse: AttendanceResponse;
+}
+
+export interface ReserveSimpleRequest {
+  id: number;
+  attendanceRequest: AttendanceRequest;
 }
