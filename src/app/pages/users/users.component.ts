@@ -14,11 +14,14 @@ import { CommonModule } from '@angular/common';
 import { IconField, IconFieldModule } from 'primeng/iconfield';
 import { InputIcon, InputIconModule } from 'primeng/inputicon';
 import { UserStateService } from './user-state.service';
+import { TitleComponent } from '@shared/utils/title/title.component';
+
 @Component({
   selector: 'app-users',
   standalone: true,
   imports: [
     ModalUserComponent,
+    TitleComponent,
     ConfirmDialogModule,
     ToastModule,
     TableModule,

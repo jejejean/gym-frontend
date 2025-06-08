@@ -46,6 +46,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'slot-capacity',
+        title: 'Capacidad de Horarios',
+        loadComponent: () =>
+          import('./pages/slot-capacity/slot-capacity.component').then(
+            (m) => m.SlotCapacityComponent
+          ),
+      },
+      {
         path: '',
         redirectTo: 'reserve',
         pathMatch: 'full',

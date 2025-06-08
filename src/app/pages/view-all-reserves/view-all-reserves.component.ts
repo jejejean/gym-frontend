@@ -27,12 +27,14 @@ import {
 import { FormErrorComponent } from '../../shared/components/form-errors/form-error.component';
 import { State, states } from '@shared/data/states';
 import { ReserveStateService } from '@pages/reserve/reserve-state.service';
+import { TitleComponent } from '@shared/utils/title/title.component';
 
 @Component({
   selector: 'app-view-all-reserves',
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    TitleComponent,
     TableModule,
     InputIconModule,
     IconFieldModule,

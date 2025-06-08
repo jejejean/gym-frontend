@@ -24,7 +24,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
-
+import { TitleComponent } from '@shared/utils/title/title.component';
 import { DividerModule } from 'primeng/divider';
 import { timeSlots } from '@shared/data/timeSlot';
 
@@ -34,6 +34,7 @@ import { timeSlots } from '@shared/data/timeSlot';
   imports: [
     ReactiveFormsModule,
     ModalReserveComponent,
+    TitleComponent,
     FullCalendarModule,
     ConfirmDialogModule,
     ToastModule,
