@@ -1,6 +1,8 @@
 export const REQUEST_MAPPING = 'api/v1';
 export const USER_API_ENDPOINTS = `${REQUEST_MAPPING}/user`;
 export const RESERVE_API_ENDPOINTS = `${REQUEST_MAPPING}/reserve`;
+export const TIME_SLOT_API_ENDPOINTS = `${REQUEST_MAPPING}/timeSlot`;
+
 export const LOGIN_API_ENDPOINTS = {
   REQUEST_MAPPING: 'auth',
   LOGIN: 'login',
@@ -26,3 +28,9 @@ export const USER = {
   UPDATE: `${USER_API_ENDPOINTS}/update`,
   DELETE: `${USER_API_ENDPOINTS}/delete`,
 };
+
+export const TIME_SLOT = {
+  GET_ALL: `${TIME_SLOT_API_ENDPOINTS}`,
+  CREATE: `${TIME_SLOT_API_ENDPOINTS}/create`,
+  UPDATE: `${TIME_SLOT_API_ENDPOINTS}/update`,
+}

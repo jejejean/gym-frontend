@@ -22,6 +22,8 @@ export interface TimeSlotResponse {
   id: number;
   startTime: string;
   endTime: string;
+  date: string;
+  capacity: number;
 }
 
 export interface AttendanceRequest {
@@ -48,4 +50,9 @@ export interface ReserveByDayResponse {
 export interface ReserveSimpleRequest {
   id: number;
   attendanceRequest: AttendanceRequest;
+}
+
+export interface TimeSlotRequest {
+  date: string;
+  capacity: number;
 }

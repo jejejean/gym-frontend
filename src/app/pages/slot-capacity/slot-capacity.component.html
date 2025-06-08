@@ -2,3 +2,40 @@
   <app-title title="Capacidad de Horarios"></app-title>
   <app-modal-slot-capacity></app-modal-slot-capacity>
 </div>
+
+<div class="card pt-4">
+  <p-table
+    [value]="timeSlots"
+    [paginator]="true"
+    [rows]="13"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    [rowsPerPageOptions]="[10, 13, 26]"
+  >
+    <ng-template #header>
+      <tr>
+        <th style="width: 25%">Fecha</th>
+        <th style="width: 25%">Tiempo Inicio</th>
+        <th style="width: 25%">Tiempo Fin</th>
+        <th style="width: 25%">Capacidad</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-timeSlot>
+      <tr>
+        <td>
+          <p-tag
+            [value]="(timeSlot?.date | date : 'dd/MM/yyyy') ?? ''"
+            [severity]="getDateSeverity(timeSlot?.date)"
+          />
+        </td>
+        <td>{{ timeSlot.startTime }}</td>
+        <td>{{ timeSlot.endTime }}</td>
+        <td>
+          <p-tag
+            [value]="timeSlot.capacity"
+            [severity]="timeSlot.capacity > 5 ? 'contrast' : 'danger'"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

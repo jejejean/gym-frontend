@@ -149,7 +149,7 @@ export class ReserveComponent implements OnInit {
             (slot) => slot.startTime === start
           );
           this.filteredEndSlots = this.timeSlots
-            .slice(startIndex, Math.min(startIndex + 6, this.timeSlots.length))
+            .slice(startIndex, Math.min(startIndex + 3, this.timeSlots.length))
             .filter((slot) => slot.endTime !== this.timeSlots[0].endTime);
           const currentEnd = this.reserveForm.get('endTime')?.value;
           if (currentEnd) {
@@ -172,7 +172,7 @@ export class ReserveComponent implements OnInit {
         const endIndex = this.timeSlots.findIndex(
           (slot) => slot.endTime === end
         );
-        const start = Math.max(0, endIndex - 5);
+        const start = Math.max(0, endIndex - 2);
         this.filteredStartSlots = this.timeSlots
           .slice(start, endIndex + 1)
           .filter(
@@ -229,7 +229,6 @@ export class ReserveComponent implements OnInit {
 
     this.filterStartSlots();
     this.filterEndSlots();
-    console.log('initReserveForm', this.reserveForm.value);
   }
 
   getTimeSlotIds(start: string, end: string): number[] {

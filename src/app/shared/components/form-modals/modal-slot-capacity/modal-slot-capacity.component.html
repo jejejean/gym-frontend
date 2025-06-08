@@ -4,3 +4,67 @@
   styleClass=" bg-[#0b3954] hover:bg-[#0b3954de] border-[#0b3954]"
   (click)="openModalCapacity()"
 />
+
+<p-dialog
+  [(visible)]="modalCapacity"
+  [modal]="true"
+  [closable]="true"
+  closeOnEscape="false"
+  [style]="{ width: '35vw' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  draggable="false"
+  header="Crear Usuario"
+  (onHide)="closeModalCapacity()"
+>
+  <p-divider class="mt-0" />
+  <form [formGroup]="capacityForm" (ngSubmit)="obSubmitCapacity()">
+    <div class="grid grid-cols-1 gap-4 mb-4">
+      <div class="flex flex-col">
+        <label class="font-medium" for="date">Fecha</label>
+        <p-datepicker
+          inputId="date"
+          formControlName="date"
+          showIcon
+          iconDisplay="input"
+          styleClass="w-full"
+          dateFormat="dd/mm/yy"
+          [appendTo]="'body'"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              capacityForm.get('date')?.touched &&
+              capacityForm.get('date')?.invalid
+          }"
+        />
+        <app-form-error
+          [control]="capacityForm.get('date')"
+          [validationMessage]="'La fecha es requerida'"
+        ></app-form-error>
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium" for="capacity">Capacidad</label>
+        <p-inputnumber
+          mode="decimal"
+          inputId="capacity"
+          formControlName="capacity"
+          [useGrouping]="false"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              capacityForm.get('capacity')?.touched &&
+              capacityForm.get('capacity')?.invalid
+          }"
+        />
+        <app-form-error
+          [control]="capacityForm.get('phone')"
+          [validationMessage]="'La capacidad es requerida'"
+        ></app-form-error>
+      </div>
+    </div>
+    <p-button
+      label="CREAR USUARIO"
+      type="submit"
+      icon="pi pi-save"
+      class="flex justify-center col-span-2"
+      styleClass=" col-span-2 bg-green-600 hover:bg-green-500 border-green-600"
+    />
+  </form>
+</p-dialog>

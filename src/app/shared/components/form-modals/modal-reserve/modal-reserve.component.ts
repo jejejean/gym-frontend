@@ -52,7 +52,7 @@ export class ModalReserveComponent implements OnInit {
   minDate: Date = new Date();
   maxDate: Date = (() => {
     const date = new Date();
-    date.setMonth(date.getMonth() + 2);
+    date.setMonth(date.getMonth() + 1);
     return date;
   })();
 
@@ -144,7 +144,7 @@ export class ModalReserveComponent implements OnInit {
           );
           this.filteredEndSlots = this.timeSlots.slice(
             startIndex,
-            startIndex + 6
+            startIndex + 3
           );
           const currentEnd = this.reservationForm.get('endTime')?.value;
           if (currentEnd) {
@@ -181,7 +181,7 @@ export class ModalReserveComponent implements OnInit {
           const endIndex = this.timeSlots.findIndex(
             (slot) => slot.endTime === end
           );
-          const start = Math.max(0, endIndex - 5); // 6 slots incluyendo el seleccionado
+          const start = Math.max(0, endIndex - 2); // 6 slots incluyendo el seleccionado
           this.filteredStartSlots = this.timeSlots.slice(start, endIndex + 1);
           const currentStart = this.reservationForm.get('startTime')?.value;
           if (currentStart) {
