@@ -57,6 +57,9 @@ export class ModalSlotCapacityComponent implements OnInit {
     if (this.capacityForm.valid) {
       const { capacity, date } = this.capacityForm.getRawValue();
       const timeSlot: TimeSlotRequest = {
+        id: 0,
+        startTime: '09:00',
+        endTime: '22:00',
         capacity: capacity,
         date: date,
       }

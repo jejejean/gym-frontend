@@ -5,7 +5,7 @@ export interface ReserveRequest {
   userId: number;
   reservationDate: string;
   details: string;
-  timeSlotId: number[];
+  reservationRequest: TimeSlotRequest[];
   attendanceRequest: AttendanceRequest;
 }
 
@@ -53,6 +53,9 @@ export interface ReserveSimpleRequest {
 }
 
 export interface TimeSlotRequest {
+  id: number;
+  startTime: string;
+  endTime: string;
   date: string;
   capacity: number;
 }
