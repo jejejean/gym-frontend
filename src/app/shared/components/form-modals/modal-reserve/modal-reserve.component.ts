@@ -44,10 +44,10 @@ export class ModalReserveComponent implements OnInit {
 
   reservationForm!: FormGroup;
   modalReserve: boolean = false;
+  userId!: number;
   timeSlots = timeSlots;
   filteredStartSlots = this.timeSlots;
   filteredEndSlots = this.timeSlots;
-  userId!: number;
   disabledDates: Date[] = [];
   minDate: Date = new Date();
   maxDate: Date = (() => {
@@ -64,6 +64,16 @@ export class ModalReserveComponent implements OnInit {
     this.filterStartSlots();
     this.filterEndSlots();
     this.loadUserData();
+  }
+
+  private getCurrentPeruTime(): Date {
+    const now = new Date();
+    const peruTime = new Date(
+      now.toLocaleString('en-US', {
+        timeZone: 'America/Lima',
+      })
+    );
+    return peruTime;
   }
 
   loadUserData() {
@@ -98,14 +108,20 @@ export class ModalReserveComponent implements OnInit {
 
   buildFormReserve() {
     const now = new Date();
-    let initialDate = new Date(now);
+    const peruOffset = -5 * 60 * 60 * 1000;
+    const peruTime = new Date(now.getTime() + peruOffset);
+    let initialDate = new Date(peruTime);
 
     if (
-      now.getHours() > 21 ||
-      (now.getHours() === 21 && now.getMinutes() >= 30)
+      peruTime.getHours() > 21 ||
+      (peruTime.getHours() === 21 && peruTime.getMinutes() >= 30)
     ) {
       this.disabledDates = [
-        new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+        new Date(
+          peruTime.getFullYear(),
+          peruTime.getMonth(),
+          peruTime.getDate()
+        ),
       ];
       initialDate.setDate(initialDate.getDate() + 1);
     } else {
@@ -123,10 +139,8 @@ export class ModalReserveComponent implements OnInit {
     this.filteredEndSlots = this.filteredStartSlots;
 
     this.reservationForm = this.formBuilder.group({
-      reservationDate: [
-        { value: initialDate, disabled: false },
-        Validators.required,
-      ],
+      reservationDate: [new Date(), Validators.required],
+
       day: [{ value: currentDay, disabled: true }],
       startTime: [null, Validators.required],
       endTime: [null, Validators.required],
@@ -144,7 +158,7 @@ export class ModalReserveComponent implements OnInit {
           );
           this.filteredEndSlots = this.timeSlots.slice(
             startIndex,
-            startIndex + 3
+            startIndex + 6
           );
           const currentEnd = this.reservationForm.get('endTime')?.value;
           if (currentEnd) {
@@ -181,7 +195,7 @@ export class ModalReserveComponent implements OnInit {
           const endIndex = this.timeSlots.findIndex(
             (slot) => slot.endTime === end
           );
-          const start = Math.max(0, endIndex - 2); // 6 slots incluyendo el seleccionado
+          const start = Math.max(0, endIndex - 5); // 6 slots incluyendo el seleccionado
           this.filteredStartSlots = this.timeSlots.slice(start, endIndex + 1);
           const currentStart = this.reservationForm.get('startTime')?.value;
           if (currentStart) {
@@ -207,48 +221,24 @@ export class ModalReserveComponent implements OnInit {
   }
 
   getAvailableTimeSlots(date: Date): typeof timeSlots {
-    const now = new Date();
-    if (
+    const now = this.getCurrentPeruTime();
+    const isToday =
       date.getFullYear() === now.getFullYear() &&
       date.getMonth() === now.getMonth() &&
-      date.getDate() === now.getDate()
-    ) {
-      // Busca el primer slot cuyo startTime sea mayor o igual a la hora actual
+      date.getDate() === now.getDate();
+
+    if (isToday) {
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const bufferMinutes = 10; // Margen de 10 minutos
+
       return this.timeSlots.filter((slot) => {
-        const [h, m] = slot.startTime.split(':').map(Number);
-        const slotMinutes = h * 60 + m;
-        return slotMinutes >= currentMinutes;
+        const [hours, minutes] = slot.startTime.split(':').map(Number);
+        const slotMinutes = hours * 60 + minutes;
+
+        return slotMinutes >= currentMinutes + bufferMinutes;
       });
     }
-    // Si no es hoy, muestra todos los slots
     return this.timeSlots;
-  }
-
-  loadReservedDates() {
-    this.reserveService
-      .getReservationDatesByUser(this.userId)
-      .subscribe((dates: string[]) => {
-        this.disabledDates = dates.map((d) => {
-          const [day, month, year] = d.split('/').map(Number);
-          return new Date(year, month - 1, day);
-        });
-
-        // Busca la primera fecha disponible y actualiza el formulario
-        const firstAvailable = this.findFirstAvailableDate();
-        this.reservationForm.get('reservationDate')?.setValue(firstAvailable);
-        const dayName =
-          firstAvailable
-            .toLocaleDateString('es-ES', { weekday: 'long' })
-            .charAt(0)
-            .toUpperCase() +
-          firstAvailable
-            .toLocaleDateString('es-ES', { weekday: 'long' })
-            .slice(1);
-        this.reservationForm
-          .get('day')
-          ?.setValue(dayName, { emitEvent: false });
-      });
   }
 
   onSubmitReserve() {
@@ -256,12 +246,12 @@ export class ModalReserveComponent implements OnInit {
       const { reservationDate, details, startTime, endTime } =
         this.reservationForm.getRawValue();
       const timeSlotId = this.getTimeSlotIds(startTime, endTime);
-      
+
       const attendanceRequest: AttendanceRequest = {
         id: 0,
         attended: false,
         checkinTime: '',
-      }
+      };
 
       const reservationRequest: ReserveRequest = {
         id: 0,
@@ -288,7 +278,6 @@ export class ModalReserveComponent implements OnInit {
 
   openModalReserve() {
     this.modalReserve = true;
-    this.loadReservedDates();
   }
 
   closeModalReserve() {

@@ -289,6 +289,7 @@ export class ReserveComponent implements OnInit {
   deleteReserve(id: number) {
     this.reserveService.deleteReservation(id).subscribe(() => {
       this.reserveStateService.deleteReserve(id);
+      this.modalReserve = false;
     });
   }
 
