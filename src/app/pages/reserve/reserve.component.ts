@@ -12,7 +12,6 @@ import {
   AttendanceRequest,
   ReserveRequest,
   ReserveResponse,
-  TimeSlotRequest,
 } from '@interfaces/reserve';
 import { ReserveStateService } from './reserve-state.service';
 import { DialogModule } from 'primeng/dialog';
@@ -244,7 +243,7 @@ export class ReserveComponent implements OnInit {
 
   onUpdateReserve() {
     if (this.reserveForm.valid) {
-      const { startTime, endTime, timeSlotsRequest, reservationDate } = this.reserveForm.getRawValue();
+      const { startTime, endTime } = this.reserveForm.getRawValue();
       const timeSlotId = this.getTimeSlotIds(startTime, endTime);
       const attendence = this.reserve.attendanceResponse;
 
@@ -254,22 +253,12 @@ export class ReserveComponent implements OnInit {
         checkinTime: attendence.checkinTime,
       };
 
-      const timeSlotsRequestList: TimeSlotRequest[] = timeSlotsRequest.map(
-        (timeSlot: TimeSlotRequest) => ({
-          id: 0,
-          startTime: startTime,
-          endTime: endTime,
-          date: reservationDate.toISOString().split('T')[0],
-          capacity: timeSlot.capacity,
-        })
-      );
-
       const reserveRequest: ReserveRequest = {
         id: this.reserve.id,
         userId: this.reserve.userId,
         reservationDate: this.reserve.reservationDate,
         details: this.reserve.details,
-        reservationRequest: timeSlotsRequestList,
+        timeSlotId: timeSlotId,
         attendanceRequest: attendanceRequest,
       };
       console.log('reserveRequest', reserveRequest);

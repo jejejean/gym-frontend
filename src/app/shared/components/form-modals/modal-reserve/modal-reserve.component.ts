@@ -14,11 +14,7 @@ import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
 import { timeSlots } from '@shared/data/timeSlot';
-import {
-  AttendanceRequest,
-  ReserveRequest,
-  TimeSlotRequest,
-} from '@interfaces/reserve';
+import { AttendanceRequest, ReserveRequest } from '@interfaces/reserve';
 import { SelectModule } from 'primeng/select';
 import { ReserveService } from '@services/reserve.service';
 import { ReserveStateService } from '@pages/reserve/reserve-state.service';
@@ -257,45 +253,34 @@ export class ModalReserveComponent implements OnInit {
 
   onSubmitReserve() {
     if (this.reservationForm.valid) {
-      const { reservationDate, details, startTime, endTime, timeSlotsRequest } =
+      const { reservationDate, details, startTime, endTime } =
         this.reservationForm.getRawValue();
       const timeSlotId = this.getTimeSlotIds(startTime, endTime);
-
+      
       const attendanceRequest: AttendanceRequest = {
         id: 0,
         attended: false,
         checkinTime: '',
-      };
-
-      const timeSlotsRequestList: TimeSlotRequest[] = timeSlotsRequest.map(
-        (timeSlot: TimeSlotRequest) => ({
-          id: 0,
-          startTime: startTime,
-          endTime: endTime,
-          date: reservationDate.toISOString().split('T')[0],
-          capacity: timeSlotId.length,
-        })
-      );
+      }
 
       const reservationRequest: ReserveRequest = {
         id: 0,
         reservationDate: reservationDate,
         details: details,
         userId: this.userId,
-        reservationRequest: timeSlotsRequest,
+        timeSlotId: timeSlotId,
         attendanceRequest: attendanceRequest,
       };
-      console.log('Reservation Request:', reservationRequest);
-      // this.reserveService.createReservation(reservationRequest).subscribe({
-      //   next: (response) => {
-      //     this.reserveStateService.addReserve(response);
-      //     this.toastr.success('Se ha registrado la reserva', 'Reservado');
-      //     this.closeModalReserve();
-      //   },
-      //   error: (error) => {
-      //     this.toastr.error(error.error.mesagge, 'Error');
-      //   },
-      // });
+      this.reserveService.createReservation(reservationRequest).subscribe({
+        next: (response) => {
+          this.reserveStateService.addReserve(response);
+          this.toastr.success('Se ha registrado la reserva', 'Reservado');
+          this.closeModalReserve();
+        },
+        error: (error) => {
+          this.toastr.error(error.error.mesagge, 'Error');
+        },
+      });
     } else {
       this.reservationForm.markAllAsTouched();
     }
