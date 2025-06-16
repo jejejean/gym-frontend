@@ -257,7 +257,7 @@ export class ReserveComponent implements OnInit {
         id: this.reserve.id,
         userId: this.reserve.userId,
         reservationDate: this.reserve.reservationDate,
-        details: this.reserve.details,
+        machineRequest: this.reserve.machineResponse,
         timeSlotId: timeSlotId,
         attendanceRequest: attendanceRequest,
       };

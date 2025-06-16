@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from '@core/guards/auth-guard.guard';
+import { RoleRedirectGuard } from '@core/guards/RoleRedirectGuard.guard';
 
 export const routes: Routes = [
   {
@@ -55,8 +56,8 @@ export const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'reserve',
-        pathMatch: 'full',
+        canActivate: [RoleRedirectGuard],
+        component: class DummyComponent {},
       },
     ],
   },

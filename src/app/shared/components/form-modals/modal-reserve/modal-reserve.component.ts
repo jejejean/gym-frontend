@@ -18,6 +18,13 @@ import { AttendanceRequest, ReserveRequest } from '@interfaces/reserve';
 import { SelectModule } from 'primeng/select';
 import { ReserveService } from '@services/reserve.service';
 import { ReserveStateService } from '@pages/reserve/reserve-state.service';
+import {
+  maquinas,
+  Maquinas,
+  tiposMaquina,
+  TiposMaquina,
+} from '@shared/data/maquinas';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
   selector: 'app-modal-reserve',
@@ -32,6 +39,7 @@ import { ReserveStateService } from '@pages/reserve/reserve-state.service';
     DatePickerModule,
     FormErrorComponent,
     SelectModule,
+    MultiSelectModule,
   ],
   templateUrl: './modal-reserve.component.html',
   styleUrls: ['./modal-reserve.component.css'],
@@ -45,6 +53,11 @@ export class ModalReserveComponent implements OnInit {
   reservationForm!: FormGroup;
   modalReserve: boolean = false;
   userId!: number;
+
+  tiposMaquina: TiposMaquina[] = tiposMaquina;
+  maquinas: Maquinas[] = maquinas;
+  filteredMaquinas: Maquinas[] = [];
+
   timeSlots = timeSlots;
   filteredStartSlots = this.timeSlots;
   filteredEndSlots = this.timeSlots;
@@ -64,6 +77,13 @@ export class ModalReserveComponent implements OnInit {
     this.filterStartSlots();
     this.filterEndSlots();
     this.loadUserData();
+    this.filterMaquinas();
+    this.reservationForm
+      .get('startTime')
+      ?.valueChanges.subscribe(() => this.updateTotalMinutes());
+    this.reservationForm
+      .get('endTime')
+      ?.valueChanges.subscribe(() => this.updateTotalMinutes());
   }
 
   private getCurrentPeruTime(): Date {
@@ -76,11 +96,48 @@ export class ModalReserveComponent implements OnInit {
     return peruTime;
   }
 
+  filterMaquinas() {
+    this.reservationForm
+      .get('tipeMachine')
+      ?.valueChanges.subscribe((tipoName: string) => {
+        const tipoObj = this.tiposMaquina.find((t) => t.name === tipoName);
+        if (tipoObj) {
+          this.filteredMaquinas = this.maquinas.filter(
+            (m) => m.tipo === tipoObj.tipo
+          );
+        } else {
+          this.filteredMaquinas = [];
+        }
+        // Limpia la selección de máquinas si cambia el tipo
+        this.reservationForm.get('machine')?.setValue([]);
+      });
+  }
+
   loadUserData() {
     const user = JSON.parse(sessionStorage.getItem('user_data') ?? '{}');
     const { userPrincipal } = user;
     const { idUser } = userPrincipal;
     this.userId = idUser;
+  }
+
+  updateTotalMinutes() {
+    const start = this.reservationForm.get('startTime')?.value;
+    const end = this.reservationForm.get('endTime')?.value;
+
+    if (start && end) {
+      const [sh, sm] = start.split(':').map(Number);
+      const [eh, em] = end.split(':').map(Number);
+
+      const startMinutes = sh * 60 + sm;
+      const endMinutes = eh * 60 + em;
+
+      const diff = endMinutes - startMinutes;
+      this.reservationForm
+        .get('minutes')
+        ?.setValue(diff > 0 ? `${diff} minutos` : '');
+    } else {
+      this.reservationForm.get('minutes')?.setValue('');
+    }
   }
 
   updateDinamicDay() {
@@ -144,7 +201,9 @@ export class ModalReserveComponent implements OnInit {
       day: [{ value: currentDay, disabled: true }],
       startTime: [null, Validators.required],
       endTime: [null, Validators.required],
-      details: [''],
+      minutes: [''],
+      tipeMachine: [''],
+      machine: [''],
     });
   }
 
@@ -243,7 +302,7 @@ export class ModalReserveComponent implements OnInit {
 
   onSubmitReserve() {
     if (this.reservationForm.valid) {
-      const { reservationDate, details, startTime, endTime } =
+      const { reservationDate, machine, startTime, endTime } =
         this.reservationForm.getRawValue();
       const timeSlotId = this.getTimeSlotIds(startTime, endTime);
 
@@ -253,14 +312,22 @@ export class ModalReserveComponent implements OnInit {
         checkinTime: '',
       };
 
+      const selectedMachines: string[] =
+        this.reservationForm.get('machine')?.value || [];
+
+      const machineRequest = this.maquinas
+        .filter((m) => selectedMachines.includes(m.name))
+        .map((m) => ({ id: m.id, name: m.name }));
+
       const reservationRequest: ReserveRequest = {
         id: 0,
         reservationDate: reservationDate,
-        details: details,
+        machineRequest: machineRequest,
         userId: this.userId,
         timeSlotId: timeSlotId,
         attendanceRequest: attendanceRequest,
       };
+      console.log('reservationRequest', reservationRequest);
       this.reserveService.createReservation(reservationRequest).subscribe({
         next: (response) => {
           this.reserveStateService.addReserve(response);

@@ -96,22 +96,60 @@
         ></app-form-error>
       </div>
       <div class="flex flex-col md:col-span-2">
-        <label class="font-medium" for="details">Detalle</label>
+        <label class="font-medium" for="minutes">Total de minutos</label>
         <input
+          readonly
           type="text"
-          id="details"
+          id="minutes"
           pInputText
-          formControlName="details"
+          formControlName="minutes"
           [ngClass]="{
             'ng-invalid ng-dirty':
-              reservationForm.get('details')?.touched &&
-              reservationForm.get('details')?.invalid
+              reservationForm.get('minutes')?.touched &&
+              reservationForm.get('minutes')?.invalid
           }"
         />
-        <app-form-error
-          [control]="reservationForm.get('details')"
-          [maxMessage]="'La descripción debe tener como máximo 200 caracteres'"
-        ></app-form-error>
+      </div>
+      <!-- tipe machine -->
+      <div class="flex flex-col md:col-span-1">
+        <label class="font-medium" for="tipeMachine">Tipo Maquina</label>
+        <p-select
+          fluid
+          formControlName="tipeMachine"
+          id="tipeMachine"
+          [options]="tiposMaquina"
+          optionLabel="name"
+          optionValue="name"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="'Seleccione el tipo de maquina'"
+          [appendTo]="'body'"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              reservationForm.get('tipeMachine')?.touched &&
+              reservationForm.get('tipeMachine')?.invalid
+          }"
+        />
+      </div>
+      <div class="flex flex-col md:col-span-1">
+        <label class="font-medium" for="machine">Maquina</label>
+        <p-multiselect
+          fluid
+          formControlName="machine"
+          id="machine"
+          [options]="filteredMaquinas"
+          optionLabel="name"
+          optionValue="name"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="'Seleccione una maquina'"
+          [appendTo]="'body'"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              reservationForm.get('machine')?.touched &&
+              reservationForm.get('machine')?.invalid
+          }"
+        />
       </div>
     </div>
     <p-button

@@ -1,6 +1,7 @@
-export interface Tipos {
+export interface TiposMaquina {
   id: number;
   name: string;
+  tipo: number;
 }
 
 export interface Maquinas {
@@ -9,10 +10,10 @@ export interface Maquinas {
   tipo: number;
 }
 
-export const tipos: Tipos[] = [
-  { id: 1, name: 'Máquinas de fuerza' },
-  { id: 2, name: 'Máquinas de cardio' },
-  { id: 3, name: 'Máquinas multifuncionales' },
+export const tiposMaquina: TiposMaquina[] = [
+  { id: 1, name: 'Máquinas de fuerza', tipo: 1 },
+  { id: 2, name: 'Máquinas de cardio', tipo: 2 },
+  { id: 3, name: 'Máquinas multifuncionales', tipo: 3 },
 ];
 
 export const maquinas: Maquinas[] = [

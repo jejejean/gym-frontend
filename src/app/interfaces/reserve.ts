@@ -4,7 +4,7 @@ export interface ReserveRequest {
   id: number;
   userId: number;
   reservationDate: string;
-  details: string;
+  machineRequest: MachineRequest[];
   timeSlotId: number[];
   attendanceRequest: AttendanceRequest;
 }
@@ -13,7 +13,7 @@ export interface ReserveResponse {
   id: number;
   userId: number;
   reservationDate: string;
-  details: string;
+  machineResponse: MachineResponse[];
   timeSlotResponse: TimeSlotResponse[];
   attendanceResponse: AttendanceResponse;
 }
@@ -42,7 +42,7 @@ export interface ReserveByDayResponse {
   id: number;
   userSimpleResponse: UserSimpleResponse;
   reservationDate: string;
-  details: string;
+  machineResponse: MachineResponse[];
   timeSlotResponse: TimeSlotResponse[];
   attendanceResponse: AttendanceResponse;
 }
@@ -55,4 +55,14 @@ export interface ReserveSimpleRequest {
 export interface TimeSlotRequest {
   date: string;
   capacity: number;
+}
+
+export interface MachineResponse {
+  id: number;
+  name: string;
+}
+
+export interface MachineRequest {
+  id: number;
+  name: string;
 }
