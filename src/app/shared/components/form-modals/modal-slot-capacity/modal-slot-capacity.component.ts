@@ -16,6 +16,14 @@ import { ToastrService } from 'ngx-toastr';
 import { TimeSlotRequest } from '@interfaces/reserve';
 import { TimeSlotService } from '@services/timeSlot.service';
 import { SlotCapacityStateService } from '@pages/slot-capacity/slot-capacity-state.service';
+import { SelectModule } from 'primeng/select';
+import { MultiSelectModule } from 'primeng/multiselect';
+import {
+  Maquinas,
+  maquinas,
+  tiposMaquina,
+  TiposMaquina,
+} from '@shared/data/maquinas';
 
 @Component({
   selector: 'app-modal-slot-capacity',
@@ -29,6 +37,8 @@ import { SlotCapacityStateService } from '@pages/slot-capacity/slot-capacity-sta
     DialogModule,
     InputNumberModule,
     FormErrorComponent,
+    SelectModule,
+    MultiSelectModule,
   ],
   templateUrl: './modal-slot-capacity.component.html',
   styleUrl: './modal-slot-capacity.component.css',
@@ -42,6 +52,10 @@ export class ModalSlotCapacityComponent implements OnInit {
   capacityForm!: FormGroup;
   modalCapacity: boolean = false;
 
+  tiposMaquina: TiposMaquina[] = tiposMaquina;
+  maquinas: Maquinas[] = maquinas;
+  filteredMaquinas: Maquinas[] = [];
+
   ngOnInit(): void {
     this.buildFormCapacity();
   }
@@ -50,7 +64,26 @@ export class ModalSlotCapacityComponent implements OnInit {
     this.capacityForm = this.formBuilder.group({
       capacity: [20, [Validators.required, Validators.min(1)]],
       date: [new Date(), Validators.required],
+      tipeMachine: [''],
+      machine: [''],
     });
+  }
+
+  filterMaquinas() {
+    this.capacityForm
+      .get('tipeMachine')
+      ?.valueChanges.subscribe((tipoName: string) => {
+        const tipoObj = this.tiposMaquina.find((t) => t.name === tipoName);
+        if (tipoObj) {
+          this.filteredMaquinas = this.maquinas.filter(
+            (m) => m.tipo === tipoObj.tipo
+          );
+        } else {
+          this.filteredMaquinas = [];
+        }
+        // Limpia la selección de máquinas si cambia el tipo
+        this.capacityForm.get('machine')?.setValue([]);
+      });
   }
 
   obSubmitCapacity() {
@@ -59,18 +92,20 @@ export class ModalSlotCapacityComponent implements OnInit {
       const timeSlot: TimeSlotRequest = {
         capacity: capacity,
         date: date,
-      }
+      };
       this.timeSlotService.createTimeSlot(timeSlot).subscribe({
         next: (response) => {
           this.timeSlotStateService.addTimeSlot(response);
-          this.toastr.success('Se ha registrado la capacidad del horario', 'Agregado');
+          this.toastr.success(
+            'Se ha registrado la capacidad del horario',
+            'Agregado'
+          );
           this.closeModalCapacity();
         },
         error: (error) => {
           this.toastr.error(error.error.message, 'Error al agregar');
         },
       });
-
     } else {
       this.toastr.error('Please fill in all required fields');
     }

@@ -13,7 +13,7 @@
   [style]="{ width: '35vw' }"
   [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
   draggable="false"
-  header="Crear Usuario"
+  header="Agregar Capacidad"
   (onHide)="closeModalCapacity()"
 >
   <p-divider class="mt-0" />
@@ -58,9 +58,50 @@
           [validationMessage]="'La capacidad es requerida'"
         ></app-form-error>
       </div>
+      <div class="flex flex-col md:col-span-1">
+        <label class="font-medium" for="tipeMachine">Tipo Maquina</label>
+        <p-select
+          fluid
+          formControlName="tipeMachine"
+          id="tipeMachine"
+          [options]="tiposMaquina"
+          optionLabel="name"
+          optionValue="name"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="'Seleccione el tipo de maquina'"
+          [appendTo]="'body'"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              capacityForm.get('tipeMachine')?.touched &&
+              capacityForm.get('tipeMachine')?.invalid
+          }"
+        />
+      </div>
+      <div class="flex flex-col md:col-span-1">
+        <label class="font-medium" for="machine">Maquina</label>
+        <p-multiselect
+          fluid
+          formControlName="machine"
+          id="machine"
+          [options]="filteredMaquinas"
+          optionLabel="name"
+          optionValue="name"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="'Seleccione una maquina'"
+          [appendTo]="'body'"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              capacityForm.get('machine')?.touched &&
+              capacityForm.get('machine')?.invalid
+          }"
+        />
+      </div>
     </div>
+
     <p-button
-      label="CREAR USUARIO"
+      label="REGISTRAR"
       type="submit"
       icon="pi pi-save"
       class="flex justify-center col-span-2"
