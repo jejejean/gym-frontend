@@ -300,6 +300,17 @@ export class ModalReserveComponent implements OnInit {
     return this.timeSlots;
   }
 
+  getPeruDateString(date: Date): string {
+    // Obtiene la fecha en la zona horaria de Lima
+    const peruDate = new Date(
+      date.toLocaleString('en-US', { timeZone: 'America/Lima' })
+    );
+    const yyyy = peruDate.getFullYear();
+    const mm = String(peruDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(peruDate.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
   onSubmitReserve() {
     if (this.reservationForm.valid) {
       const { reservationDate, machine, startTime, endTime } =
@@ -319,9 +330,11 @@ export class ModalReserveComponent implements OnInit {
         .filter((m) => selectedMachines.includes(m.name))
         .map((m) => ({ id: m.id, name: m.name }));
 
+      const reservationDateString = this.getPeruDateString(reservationDate);
+
       const reservationRequest: ReserveRequest = {
         id: 0,
-        reservationDate: reservationDate,
+        reservationDate: reservationDateString,
         machineRequest: machineRequest,
         userId: this.userId,
         timeSlotId: timeSlotId,
