@@ -8,96 +8,88 @@
 <div class="card pt-4">
   <p-table
     #dt2
-    [value]="userData"
+    [value]="userList"
     dataKey="id"
     [rows]="10"
     [rowsPerPageOptions]="[10, 25, 50]"
     [paginator]="true"
     [globalFilterFields]="[
-      'name',
-      'country.name',
-      'representative.name',
-      'status'
+      'status',
+      'username',
+      'email',
+      'phone',
+      'planName',
+      'planDuration'
     ]"
     [tableStyle]="{ 'min-width': '75rem' }"
   >
-    <ng-template pTemplate="caption">
-      <div class="flex">
-        <p-iconfield iconPosition="left" class="ml-auto">
-          <p-inputicon>
-            <i class="pi pi-search"></i>
-          </p-inputicon>
-          <input
-            pInputText
-            type="text"
-            (input)="onGlobalFilter($event)"
-            placeholder="Search keyword"
+    <ng-template #caption>
+      <div class="flex justify-between items-center w-full">
+        <div>
+          <p-inputgroup>
+            <p-inputgroup-addon>
+              <i class="pi pi-search"></i>
+            </p-inputgroup-addon>
+            <input
+              pInputText
+              class="border rounded-r-md px-2 py-1"
+              (input)="onGlobalFilter($event)"
+              placeholder="Buscador de Clientes"
+            />
+          </p-inputgroup>
+        </div>
+        <div class="flex gap-2">
+          <p-button
+            [outlined]="true"
+            icon="pi pi-filter-slash"
+            label="Clear"
+            severity="contrast"
+            (click)="clear(dt2)"
           />
-        </p-iconfield>
+          <p-button
+            icon="pi pi-externalusers.component.ts:87 ERROR TypeError: Cannot read properties of undefined (reading 'filter')-link"
+            label="Export"
+            (click)="exportTable()"
+          />
+        </div>
       </div>
     </ng-template>
-    <ng-template pTemplate="header">
+
+    <ng-template #header>
       <tr>
-        <th style="width: 5%" scope="col">Estado</th>
-        <th scope="col">Nombres</th>
-        <th scope="col">Telefóno</th>
-        <th scope="col">Correo</th>
-        <th scope="col">Plan</th>
-        <th scope="col">Inicio</th>
-        <th scope="col">Fin</th>
-        <th scope="col">Duración</th>
-      </tr>
-      <tr>
-        <th scope="col"></th>
-        <th scope="col">
-          <p-columnFilter
-            type="text"
-            field="username"
-            placeholder="Buscar por nombre"
-          ></p-columnFilter>
+        <th pSortableColumn="status">
+          Estado
+          <p-sortIcon field="status" />
         </th>
-        <th scope="col">
-          <p-columnFilter
-            type="text"
-            field="phone"
-            placeholder="Buscar por teléfono"
-          ></p-columnFilter>
+        <th pSortableColumn="username">
+          Nombre
+          <p-sortIcon field="username" />
         </th>
-        <th scope="col">
-          <p-columnFilter
-            type="text"
-            field="email"
-            placeholder="Buscar por correo"
-          ></p-columnFilter>
+        <th pSortableColumn="phone">
+          Teléfono
+          <p-sortIcon field="phone" />
         </th>
-        <th scope="col">
-          <p-columnFilter
-            type="text"
-            field="planName"
-            placeholder="Buscar por Plan"
-          ></p-columnFilter>
+        <th pSortableColumn="email">
+          Correo
+          <p-sortIcon field="email" />
         </th>
-        <th scope="col">
-          <p-columnFilter
-            type="text"
-            field="planStartDate"
-            placeholder="Buscar por fecha de inicio"
-          ></p-columnFilter>
+        <th pSortableColumn="rating">
+          Plan
+          <p-sortIcon field="rating" />
         </th>
-        <th scope="col">
-          <p-columnFilter
-            type="text"
-            field="planEndDate"
-            placeholder="Buscar por fecha de fin"
-          ></p-columnFilter>
+        <th pSortableColumn="startDate">
+          Inicio
+          <p-sortIcon field="startDate" />
         </th>
-        <th scope="col">
-          <p-columnFilter
-            type="text"
-            field="planDuration"
-            placeholder="Buscar por Duración en días"
-          ></p-columnFilter>
+        <th pSortableColumn="endDate">
+          Fin
+          <p-sortIcon field="startDate" />
         </th>
+        <th pSortableColumn="duration">
+          Duración
+          <p-sortIcon field="duration" />
+        </th>
+        <th style="min-width: 12rem">Acciones</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-userData>
@@ -132,17 +124,38 @@
           {{ userData.email }}
         </td>
         <td>
-          {{ userData.userPlansResponse[0]?.planTypeResponse.name }}
+          {{
+            userData.userPlansResponse[userData.userPlansResponse.length - 1]
+              ?.planTypeResponse.name
+          }}
         </td>
         <td>
-          {{ userData.userPlansResponse[0]?.startDate | date : "dd/MM/yyyy" }}
+          {{
+            userData.userPlansResponse[userData.userPlansResponse.length - 1]
+              ?.startDate | date : "dd/MM/yyyy"
+          }}
         </td>
         <td>
-          {{ userData.userPlansResponse[0]?.endDate | date : "dd/MM/yyyy" }}
+          {{
+            userData.userPlansResponse[userData.userPlansResponse.length - 1]
+              ?.endDate | date : "dd/MM/yyyy"
+          }}
         </td>
         <td>
-          {{ userData.userPlansResponse[0]?.planTypeResponse.durationDays }}
+          {{
+            userData.userPlansResponse[userData.userPlansResponse.length - 1]
+              ?.planTypeResponse.durationDays
+          }}
           Días
+        </td>
+        <td>
+          <p-button
+            icon="pi pi-pencil"
+            class="mr-2"
+            [rounded]="true"
+            [outlined]="true"
+            (click)="getUserDataById(userData.idUser)"
+          />
         </td>
       </tr>
     </ng-template>
@@ -153,3 +166,127 @@
     </ng-template>
   </p-table>
 </div>
+
+<p-dialog
+  [(visible)]="modalUpdateUser"
+  [modal]="true"
+  [closable]="true"
+  closeOnEscape="false"
+  [style]="{ width: '35vw' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  draggable="false"
+  header="Actualizar Tipo de Plan"
+  (onHide)="closeModalUpdate()"
+>
+  <p-divider class="mt-0" />
+  <form *ngIf="userForm" [formGroup]="userForm" (ngSubmit)="onSubmitUser()">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="flex flex-col col-span-2">
+        <label class="font-medium" for="username">Nombres</label>
+        <input readonly pInputText id="username" formControlName="username" />
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium" [for]="'planType'">Tipo de Plan</label>
+        <p-select
+          fluid
+          formControlName="planType"
+          [id]="'planType'"
+          [options]="planType"
+          optionLabel="name"
+          optionValue="id"
+          [placeholder]="'Seleccione una opción'"
+          [appendTo]="'body'"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              userForm.get('planType')?.touched &&
+              userForm.get('planType')?.invalid
+          }"
+        />
+        <app-form-error
+          [control]="userForm.get('planType')"
+          [validationMessage]="'El tipo de plan es requerido'"
+        ></app-form-error>
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium" for="planDuration">Duración</label>
+        <input
+          readonly
+          pInputText
+          id="planDuration"
+          formControlName="planDuration"
+        />
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium" [for]="'planStartDate'">Fecha Inicio</label>
+        <p-datepicker
+          [inputId]="'planStartDate'"
+          formControlName="planStartDate"
+          showIcon
+          iconDisplay="input"
+          styleClass="w-full"
+          dateFormat="dd/mm/yy"
+          [appendTo]="'body'"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              userForm.get('planStartDate')?.touched &&
+              userForm.get('planStartDate')?.invalid
+          }"
+        />
+        <app-form-error
+          [control]="userForm.get('planStartDate')"
+          [validationMessage]="'La fecha es requerida'"
+        ></app-form-error>
+      </div>
+      <div class="flex flex-col">
+        <label class="font-medium" [for]="'planEndDate'">Fecha Fin</label>
+        <p-datepicker
+          [inputId]="'planEndDate'"
+          formControlName="planEndDate"
+          showIcon
+          iconDisplay="input"
+          styleClass="w-full"
+          dateFormat="dd/mm/yy"
+          [appendTo]="'body'"
+          [ngClass]="{
+            'ng-invalid ng-dirty':
+              userForm.get('planEndDate')?.touched &&
+              userForm.get('planEndDate')?.invalid
+          }"
+        />
+        <app-form-error
+          [control]="userForm.get('planEndDate')"
+          [validationMessage]="'La fecha es requerida'"
+        ></app-form-error>
+      </div>
+      
+      <div class="flex flex-col">
+        <label class="font-medium" for="status">Estado</label>
+        <p-select
+          fluid
+          formControlName="status"
+          id="status"
+          [options]="states"
+          optionLabel="name"
+          optionValue="name"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="'Seleccione una hora de inicio'"
+          [appendTo]="'body'"
+        />
+        <app-form-error
+          [control]="userForm.get('status')"
+          [validationMessage]="'La hora de inicio es requerida'"
+        ></app-form-error>
+      </div>
+
+    </div>
+
+    <p-button
+      label="Actualizar"
+      type="submit"
+      icon="pi pi-save"
+      class="flex justify-center col-span-2"
+      styleClass=" col-span-2 bg-green-600 hover:bg-green-500 border-green-600"
+    />
+  </form>
+</p-dialog>

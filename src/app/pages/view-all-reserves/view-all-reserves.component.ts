@@ -125,19 +125,19 @@ export class ViewAllReservesComponent implements OnInit {
       const { attended, checkinTime } = this.attendanceForm.getRawValue();
 
       const attendanceRequest: ReserveSimpleRequest = {
-        id: 35,
+        id: this.reserve.id,
         attendanceRequest: {
-          id: 35,
+          id: 0,
           attended: attended,
           checkinTime: checkinTime,
         },
       };
       console.log('Attendance Request:', attendanceRequest);
 
-      this.reserveService.updateAttendance(35, attendanceRequest).subscribe({
+      this.reserveService.updateAttendance(this.reserve.id, attendanceRequest).subscribe({
         next: (response) => {
-          this.reserveStateService.updateAttended(35, {
-            id: 35,
+          this.reserveStateService.updateAttended(this.reserve.id, {
+            id: this.reserve.id,
             attendanceRequest: response,
           });
 

@@ -27,6 +27,7 @@ export const USER = {
   CREATE: `${USER_API_ENDPOINTS}/create`,
   UPDATE: `${USER_API_ENDPOINTS}/update`,
   DELETE: `${USER_API_ENDPOINTS}/delete`,
+  UPDATE_PLAN_TYPE: `${USER_API_ENDPOINTS}/updateUserPlan`,
 };
 
 export const TIME_SLOT = {

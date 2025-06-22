@@ -4,6 +4,7 @@ export interface UserRequest {
   email: string;
   phone: string;
   userType: string;
+  status?: string;
   userProfileRequest: UserProfileRequest;
   userPlansRequest: UserPlansRequest[];
 }

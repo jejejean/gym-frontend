@@ -40,6 +40,11 @@ export class UserService {
     return this.httpClient.put<UserResponse>(url, User);
   }
 
+  updateUserPlanType(id: number, user: UserRequest): Observable<UserResponse> {
+    const url = `${this.apiBaseUrl}/${USER.UPDATE_PLAN_TYPE}/${id}`;
+    return this.httpClient.put<UserResponse>(url, user);
+  }
+
   deleteUser(id: number) {
     const url = `${this.apiBaseUrl}/${USER.DELETE}/${id}`;
     return this.httpClient.delete(url, { responseType: 'text' });
