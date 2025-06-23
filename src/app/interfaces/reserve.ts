@@ -24,6 +24,7 @@ export interface TimeSlotResponse {
   endTime: string;
   date: string;
   capacity: number;
+  machineResponse: MachineResponse[];
 }
 
 export interface AttendanceRequest {
@@ -55,6 +56,7 @@ export interface ReserveSimpleRequest {
 export interface TimeSlotRequest {
   date: string;
   capacity: number;
+  idsMachine: number[];
 }
 
 export interface MachineResponse {

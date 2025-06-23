@@ -58,6 +58,7 @@ export class ModalSlotCapacityComponent implements OnInit {
 
   ngOnInit(): void {
     this.buildFormCapacity();
+    this.filterMaquinas();
   }
 
   buildFormCapacity() {
@@ -72,27 +73,27 @@ export class ModalSlotCapacityComponent implements OnInit {
   filterMaquinas() {
     this.capacityForm
       .get('tipeMachine')
-      ?.valueChanges.subscribe((tipoName: string) => {
-        const tipoObj = this.tiposMaquina.find((t) => t.name === tipoName);
-        if (tipoObj) {
+      ?.valueChanges.subscribe((tipoObj: TiposMaquina) => {
+        if (tipoObj && tipoObj.tipo) {
           this.filteredMaquinas = this.maquinas.filter(
             (m) => m.tipo === tipoObj.tipo
           );
         } else {
           this.filteredMaquinas = [];
         }
-        // Limpia la selección de máquinas si cambia el tipo
         this.capacityForm.get('machine')?.setValue([]);
       });
   }
 
   obSubmitCapacity() {
     if (this.capacityForm.valid) {
-      const { capacity, date } = this.capacityForm.getRawValue();
+      const { capacity, date, machine } = this.capacityForm.getRawValue();
       const timeSlot: TimeSlotRequest = {
         capacity: capacity,
         date: date,
+        idsMachine: machine,
       };
+      console.log('timeSlot', timeSlot);
       this.timeSlotService.createTimeSlot(timeSlot).subscribe({
         next: (response) => {
           this.timeSlotStateService.addTimeSlot(response);

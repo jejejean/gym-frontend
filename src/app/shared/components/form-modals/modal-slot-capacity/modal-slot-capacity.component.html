@@ -58,7 +58,7 @@
           [validationMessage]="'La capacidad es requerida'"
         ></app-form-error>
       </div>
-      <!--  
+
       <div class="flex flex-col md:col-span-1">
         <label class="font-medium" for="tipeMachine">Tipo Maquina</label>
         <p-select
@@ -67,7 +67,6 @@
           id="tipeMachine"
           [options]="tiposMaquina"
           optionLabel="name"
-          optionValue="name"
           [filter]="true"
           [showClear]="true"
           [placeholder]="'Seleccione el tipo de maquina'"
@@ -87,7 +86,7 @@
           id="machine"
           [options]="filteredMaquinas"
           optionLabel="name"
-          optionValue="name"
+          optionValue="id"
           [filter]="true"
           [showClear]="true"
           [placeholder]="'Seleccione una maquina'"
@@ -99,7 +98,6 @@
           }"
         />
       </div>
--->
     </div>
 
     <p-button
