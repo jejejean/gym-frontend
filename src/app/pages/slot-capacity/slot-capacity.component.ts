@@ -7,6 +7,7 @@ import { TimeSlotResponse } from '@interfaces/reserve';
 import { CommonModule } from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { SlotCapacityStateService } from './slot-capacity-state.service';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-slot-capacity',
@@ -17,6 +18,7 @@ import { SlotCapacityStateService } from './slot-capacity-state.service';
     TitleComponent,
     TableModule,
     TagModule,
+    ButtonModule,
   ],
   templateUrl: './slot-capacity.component.html',
   styleUrl: './slot-capacity.component.css',
@@ -25,6 +27,7 @@ export class SlotCapacityComponent {
   timeSlotService = inject(TimeSlotService);
   timeSlotStateService = inject(SlotCapacityStateService);
   timeSlots!: TimeSlotResponse[];
+  expandedRows: { [key: number]: boolean } = {};
 
   ngOnInit() {
     this.timeSlotStateService.getAllTimeSlot();
@@ -36,7 +39,6 @@ export class SlotCapacityComponent {
         }));
       }
     );
-    //this.getTimeSlots();
   }
 
   getDateSeverity(
@@ -107,5 +109,16 @@ export class SlotCapacityComponent {
     this.timeSlotService.getAllTimeSlots().subscribe((slots) => {
       this.timeSlots = this.sortTimeSlotsByDate(slots);
     });
+  }
+
+  collapseAll() {
+    this.expandedRows = {};
+  }
+
+  onRowExpand(event: any) {
+    console.log('Row expanded:', event);
+  }
+  onRowCollapse(event: any) {
+    console.log('Row collapsed:', event);
   }
 }

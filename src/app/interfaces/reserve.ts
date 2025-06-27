@@ -23,8 +23,21 @@ export interface TimeSlotResponse {
   startTime: string;
   endTime: string;
   date: string;
+  machineTimeSlotResponse: MachineTimeSlotResponse[];
+}
+
+export interface MachineTimeSlotResponse {
+  id: number;
   capacity: number;
-  machineResponse: MachineResponse[];
+  machine: MachineResponse;
+  timeSlot: TimeSlotSummaryResponse;
+}
+
+export interface TimeSlotSummaryResponse {
+  id: number;
+  startTime: string;
+  endTime: string;
+  date: string;
 }
 
 export interface AttendanceRequest {

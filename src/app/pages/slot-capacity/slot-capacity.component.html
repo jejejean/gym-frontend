@@ -10,32 +10,73 @@
     [rows]="13"
     [tableStyle]="{ 'min-width': '50rem' }"
     [rowsPerPageOptions]="[10, 13, 26]"
+    [expandedRowKeys]="expandedRows"
+    [dataKey]="'id'"
+    (onRowExpand)="onRowExpand($event)"
+    (onRowCollapse)="onRowCollapse($event)"
   >
     <ng-template #header>
       <tr>
+        <th style="width: 5%"></th>
         <th style="width: 25%">Fecha</th>
         <th style="width: 25%">Tiempo Inicio</th>
         <th style="width: 25%">Tiempo Fin</th>
-        <th style="width: 25%">Capacidad</th>
       </tr>
     </ng-template>
-    <ng-template #body let-timeSlot>
-      <tr>
-        <td>
-          <p-tag
-            [value]="(timeSlot?.date | date : 'dd/MM/yyyy') ?? ''"
-            [severity]="getDateSeverity(timeSlot?.date)"
-          />
-        </td>
-        <td>{{ timeSlot.startTime }}</td>
-        <td>{{ timeSlot.endTime }}</td>
-        <td>
-          <p-tag
-            [value]="timeSlot.capacity"
-            [severity]="timeSlot.capacity > 5 ? 'contrast' : 'danger'"
-          />
-        </td>
-      </tr>
-    </ng-template>
+    <ng-template #body let-timeSlot let-expanded="expanded">
+    <tr>
+      <td>
+        <p-button
+          type="button"
+          pRipple
+          [pRowToggler]="timeSlot"
+          [text]="true"
+          [rounded]="true"
+          [plain]="true"
+          [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+        />
+      </td>
+      <td>
+        <p-tag
+          [value]="(timeSlot?.date | date : 'dd/MM/yyyy') ?? ''"
+          [severity]="getDateSeverity(timeSlot?.date)"
+        />
+      </td>
+      <td>{{ timeSlot.startTime }}</td>
+      <td>{{ timeSlot.endTime }}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="rowexpansion" let-timeSlot>
+    <tr>
+      <td colspan="4">
+        <div class="p-4">
+          <p-table [value]="timeSlot.machineTimeSlotResponse" dataKey="id">
+            <ng-template #header>
+              <tr>
+                <th>Máquina</th>
+                <th>Capacidad</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-mts>
+              <tr>
+                <td class="font-semibold">{{ mts.machine?.name }}</td>
+                <td>
+                  <p-tag
+                    [value]="mts.capacity"
+                    [severity]="mts.capacity > 5 ? 'contrast' : 'danger'"
+                  />
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr>
+                <td colspan="2">No hay máquinas para este horario.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
   </p-table>
 </div>
