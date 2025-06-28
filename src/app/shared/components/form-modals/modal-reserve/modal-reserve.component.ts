@@ -13,8 +13,13 @@ import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
-import { timeSlots } from '@shared/data/timeSlot';
-import { AttendanceRequest, ReserveRequest } from '@interfaces/reserve';
+import { TooltipModule } from 'primeng/tooltip';
+import {
+  AttendanceRequest,
+  MachineResponse,
+  ReserveRequest,
+  TimeSlotSummaryResponse,
+} from '@interfaces/reserve';
 import { SelectModule } from 'primeng/select';
 import { ReserveService } from '@services/reserve.service';
 import { ReserveStateService } from '@pages/reserve/reserve-state.service';
@@ -25,6 +30,7 @@ import {
   TiposMaquina,
 } from '@shared/data/maquinas';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { TimeSlotService } from '@services/timeSlot.service';
 
 @Component({
   selector: 'app-modal-reserve',
@@ -40,6 +46,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     FormErrorComponent,
     SelectModule,
     MultiSelectModule,
+    TooltipModule,
   ],
   templateUrl: './modal-reserve.component.html',
   styleUrls: ['./modal-reserve.component.css'],
@@ -49,18 +56,22 @@ export class ModalReserveComponent implements OnInit {
   toastr = inject(ToastrService);
   reserveService = inject(ReserveService);
   reserveStateService = inject(ReserveStateService);
+  timeSlotService = inject(TimeSlotService);
 
   reservationForm!: FormGroup;
   modalReserve: boolean = false;
   userId!: number;
+  capacityTooltip: string = ''; // Para mostrar en el tooltip
+  capacityData: any; // Para almacenar la data de capacidad
 
   tiposMaquina: TiposMaquina[] = tiposMaquina;
   maquinas: Maquinas[] = maquinas;
   filteredMaquinas: Maquinas[] = [];
+  selectMaquinas: MachineResponse[] = [];
+  selectTimes: TimeSlotSummaryResponse[] = [];
 
-  timeSlots = timeSlots;
-  filteredStartSlots = this.timeSlots;
-  filteredEndSlots = this.timeSlots;
+  filteredStartSlots: TimeSlotSummaryResponse[] = [];
+  filteredEndSlots: TimeSlotSummaryResponse[] = [];
   disabledDates: Date[] = [];
   minDate: Date = new Date();
   maxDate: Date = (() => {
@@ -84,6 +95,25 @@ export class ModalReserveComponent implements OnInit {
     this.reservationForm
       .get('endTime')
       ?.valueChanges.subscribe(() => this.updateTotalMinutes());
+
+    this.reservationForm
+      .get('reservationDate')
+      ?.valueChanges.subscribe((date: Date) => {
+        if (date) {
+          this.getMachinesByDate(date);
+          this.getTimeSlotsByDate(date);
+        }
+      });
+
+    this.reservationForm
+      .get('machine')
+      ?.valueChanges.subscribe(() => this.checkAndFetchCapacity());
+    this.reservationForm
+      .get('startTime')
+      ?.valueChanges.subscribe(() => this.checkAndFetchCapacity());
+    this.reservationForm
+      .get('endTime')
+      ?.valueChanges.subscribe(() => this.checkAndFetchCapacity());
   }
 
   private getCurrentPeruTime(): Date {
@@ -96,15 +126,85 @@ export class ModalReserveComponent implements OnInit {
     return peruTime;
   }
 
+  checkAndFetchCapacity() {
+    const selectedMachines = this.reservationForm.get('machine')?.value || [];
+    const startTime = this.reservationForm.get('startTime')?.value;
+    const endTime = this.reservationForm.get('endTime')?.value;
+
+    if (selectedMachines.length && startTime && endTime) {
+      const machineObjs = this.filteredMaquinas.filter((m) =>
+        selectedMachines.includes(m.name)
+      );
+      const machineIds = machineObjs.map((m) => m.id);
+      const timeSlotObjs = this.selectTimes.filter(
+        (slot) => slot.startTime >= startTime && slot.endTime <= endTime
+      );
+      const timeSlotIds = this.getTimeSlotIds(startTime, endTime);
+
+      if (machineIds.length && timeSlotIds.length) {
+        this.timeSlotService.getCapacity(machineIds, timeSlotIds).subscribe({
+          next: (capacityData: any) => {
+             this.capacityData = capacityData;
+            let tooltip = '';
+            machineObjs.forEach((machine) => {
+              tooltip += `${machine.name}:\nInico - Fin - Capacidad\n`;
+              timeSlotIds.forEach((tsId) => {
+                const slot = this.selectTimes.find((s) => s.id === tsId);
+                const cap = capacityData[machine.id]?.[tsId] ?? 'N/A';
+                if (slot) {
+                  // Formatea a "hh:mm"
+                  const start = slot.startTime.slice(0, 5);
+                  const end = slot.endTime.slice(0, 5);
+                  tooltip += `${start} - ${end} - ${cap} slots\n`;
+                }
+              });
+              tooltip += '\n';
+            });
+            this.capacityTooltip = tooltip.trim();
+          },
+          error: () => {
+            this.capacityTooltip = 'No se pudo obtener la capacidad';
+          },
+        });
+      } else {
+        this.capacityTooltip = '';
+      }
+    } else {
+      this.capacityTooltip = '';
+    }
+  }
+
+  getMachinesByDate(date: Date): void {
+    this.timeSlotService.getMachinesByDate(date).subscribe({
+      next: (response) => {
+        this.selectMaquinas = response;
+      },
+    });
+  }
+
+  getTimeSlotsByDate(date: Date): void {
+    this.timeSlotService.getTimeSlotsByDate(date).subscribe({
+      next: (response) => {
+        this.selectTimes = response;
+        this.filteredStartSlots = response;
+        this.filteredEndSlots = response;
+      },
+    });
+  }
+
   filterMaquinas() {
     this.reservationForm
       .get('tipeMachine')
       ?.valueChanges.subscribe((tipoName: string) => {
         const tipoObj = this.tiposMaquina.find((t) => t.name === tipoName);
         if (tipoObj) {
-          this.filteredMaquinas = this.maquinas.filter(
-            (m) => m.tipo === tipoObj.tipo
-          );
+          this.filteredMaquinas = this.selectMaquinas
+            .filter((m) => m.tipeMachineId === tipoObj.tipo)
+            .map((m) => ({
+              id: m.id,
+              name: m.name,
+              tipo: m.tipeMachineId,
+            }));
         } else {
           this.filteredMaquinas = [];
         }
@@ -212,10 +312,10 @@ export class ModalReserveComponent implements OnInit {
       .get('startTime')
       ?.valueChanges.subscribe((start: string) => {
         if (start) {
-          const startIndex = this.timeSlots.findIndex(
+          const startIndex = this.selectTimes.findIndex(
             (slot) => slot.startTime === start
           );
-          this.filteredEndSlots = this.timeSlots.slice(
+          this.filteredEndSlots = this.selectTimes.slice(
             startIndex,
             startIndex + 6
           );
@@ -227,7 +327,7 @@ export class ModalReserveComponent implements OnInit {
             if (!valid) this.reservationForm.get('endTime')?.setValue(null);
           }
         } else {
-          this.filteredEndSlots = this.timeSlots;
+          this.filteredEndSlots = this.selectTimes;
         }
       });
   }
@@ -251,11 +351,11 @@ export class ModalReserveComponent implements OnInit {
       .get('endTime')
       ?.valueChanges.subscribe((end: string) => {
         if (end) {
-          const endIndex = this.timeSlots.findIndex(
+          const endIndex = this.selectTimes.findIndex(
             (slot) => slot.endTime === end
           );
           const start = Math.max(0, endIndex - 5); // 6 slots incluyendo el seleccionado
-          this.filteredStartSlots = this.timeSlots.slice(start, endIndex + 1);
+          this.filteredStartSlots = this.selectTimes.slice(start, endIndex + 1);
           const currentStart = this.reservationForm.get('startTime')?.value;
           if (currentStart) {
             const valid = this.filteredStartSlots.some(
@@ -264,22 +364,27 @@ export class ModalReserveComponent implements OnInit {
             if (!valid) this.reservationForm.get('startTime')?.setValue(null);
           }
         } else {
-          this.filteredStartSlots = this.timeSlots;
+          this.filteredStartSlots = this.selectTimes;
         }
       });
   }
 
   getTimeSlotIds(start: string, end: string): number[] {
-    const startIndex = timeSlots.findIndex((slot) => slot.startTime === start);
-    const endIndex = timeSlots.findIndex((slot) => slot.endTime === end);
+    const startIndex = this.selectTimes.findIndex(
+      (slot) => slot.startTime === start
+    );
+    const endIndex = this.selectTimes.findIndex((slot) => slot.endTime === end);
 
     if (startIndex === -1 || endIndex === -1 || startIndex > endIndex) {
       return [];
     }
-    return timeSlots.slice(startIndex, endIndex + 1).map((slot) => slot.id);
+    return this.selectTimes
+      .slice(startIndex, endIndex + 1)
+      .map((slot) => slot.id);
   }
 
-  getAvailableTimeSlots(date: Date): typeof timeSlots {
+  // metodo para obtener los horarios disponibles intervalor de 10 minutos
+  getAvailableTimeSlots(date: Date): TimeSlotSummaryResponse[] {
     const now = this.getCurrentPeruTime();
     const isToday =
       date.getFullYear() === now.getFullYear() &&
@@ -290,14 +395,14 @@ export class ModalReserveComponent implements OnInit {
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
       const bufferMinutes = 10; // Margen de 10 minutos
 
-      return this.timeSlots.filter((slot) => {
+      return this.selectTimes.filter((slot) => {
         const [hours, minutes] = slot.startTime.split(':').map(Number);
         const slotMinutes = hours * 60 + minutes;
 
         return slotMinutes >= currentMinutes + bufferMinutes;
       });
     }
-    return this.timeSlots;
+    return this.selectTimes;
   }
 
   getPeruDateString(date: Date): string {
@@ -339,6 +444,7 @@ export class ModalReserveComponent implements OnInit {
         userId: this.userId,
         timeSlotId: timeSlotId,
         attendanceRequest: attendanceRequest,
+        capacityInfo: this.capacityData, // Aquí envías la info de capacidad
       };
       console.log('reservationRequest', reservationRequest);
       this.reserveService.createReservation(reservationRequest).subscribe({
@@ -348,7 +454,7 @@ export class ModalReserveComponent implements OnInit {
           this.closeModalReserve();
         },
         error: (error) => {
-          this.toastr.error(error.error.mesagge, 'Error');
+          this.toastr.info(error.error.message, 'Información');
         },
       });
     } else {
@@ -358,6 +464,12 @@ export class ModalReserveComponent implements OnInit {
 
   openModalReserve() {
     this.modalReserve = true;
+    const peruNow = this.getCurrentPeruTime();
+    this.getMachinesByDate(peruNow);
+    this.getTimeSlotsByDate(peruNow);
+    this.reservationForm
+      .get('reservationDate')
+      ?.setValue(peruNow, { emitEvent: false });
   }
 
   closeModalReserve() {

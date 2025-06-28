@@ -7,6 +7,7 @@ export interface ReserveRequest {
   machineRequest: MachineRequest[];
   timeSlotId: number[];
   attendanceRequest: AttendanceRequest;
+  capacityInfo?: any;
 }
 
 export interface ReserveResponse {
@@ -75,6 +76,7 @@ export interface TimeSlotRequest {
 export interface MachineResponse {
   id: number;
   name: string;
+  tipeMachineId: number;
 }
 
 export interface MachineRequest {
