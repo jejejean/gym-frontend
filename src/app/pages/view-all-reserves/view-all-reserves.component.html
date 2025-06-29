@@ -1,3 +1,5 @@
+<p-toast />
+<p-confirmdialog />
 <app-title title="Gestion de Reservas"></app-title>
 
 <div class="card pt-4">
@@ -9,7 +11,7 @@
     [rowsPerPageOptions]="[10, 25, 50]"
     [paginator]="true"
     [globalFilterFields]="[
-      'reserveData.userSimpleResponse.username',
+      'userSimpleResponse.username',
       'timeSlotResponse[0].startTime',
       'timeSlotResponse[timeSlotResponse.length-1].endTime',
       'attendanceResponse.attended'
@@ -17,52 +19,31 @@
     [tableStyle]="{ 'min-width': '75rem' }"
   >
     <ng-template pTemplate="caption">
-      <div class="flex">
-        <p-iconfield iconPosition="left" class="ml-auto">
-          <p-inputicon>
-            <i class="pi pi-search"></i>
-          </p-inputicon>
-          <input
-            pInputText
-            type="text"
-            (input)="onGlobalFilter($event)"
-            placeholder="Search keyword"
-          />
-        </p-iconfield>
-      </div>
+      <div>
+          <p-inputgroup>
+            <p-inputgroup-addon>
+              <i class="pi pi-search"></i>
+            </p-inputgroup-addon>
+            <input
+              pInputText
+              class="border rounded-r-md px-2 py-1"
+              (input)="onGlobalFilter($event)"
+              placeholder="Buscador de Clientes"
+            />
+          </p-inputgroup>
+        </div>
     </ng-template>
     <ng-template pTemplate="header">
       <tr>
-        <th class="text-center" style="width: 8%" scope="col">Estado</th>
-        <th class="text-center" scope="col">Asistencia</th>
-        <th scope="col">Nombres</th>
-        <th scope="col">Hora Inicio</th>
-        <th scope="col">Hora Fin</th>
-      </tr>
-      <tr>
-        <th scope="col"></th>
-        <th scope="col"></th>
-        <th scope="col">
-          <p-columnFilter
-            type="text"
-            field="userSimpleResponse.username"
-            placeholder="Buscar por nombre"
-          ></p-columnFilter>
+        <th class="text-center" style="width: 5%" pSortableColumn="status">
+          Estado
+          <p-sortIcon field="status" />
         </th>
-        <th scope="col">
-          <p-columnFilter
-            type="text"
-            field="timeSlotResponse[0].startTime"
-            placeholder="Buscar por hora inicio"
-          ></p-columnFilter>
-        </th>
-        <th scope="col">
-          <p-columnFilter
-            type="text"
-            field="timeSlotResponse[timeSlotResponse.length-1].endTime"
-            placeholder="Buscar hora fin"
-          ></p-columnFilter>
-        </th>
+        <th class="text-center" style="width: 5%" scope="col">Asistencia</th>
+        <th class="text-center" style="width: 5%" scope="col">Recordatorio</th>
+        <th scope="col" style="width: 20%">Nombres</th>
+        <th scope="col" style="width: 5%">Hora Inicio</th>
+        <th scope="col" style="width: 5%">Hora Fin</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-reserveData>
@@ -84,6 +65,15 @@
               icon="pi pi-calendar-clock"
               styleClass="bg-[#0b3954] hover:bg-[#0b3954de] border-[#0b3954]"
               (click)="getAttendance(reserveData.id)"
+            />
+          </div>
+        </td>
+        <td>
+          <div class="flex justify-center">
+            <p-button
+              icon="pi pi-bell"
+              styleClass="bg-[#0b3954] hover:bg-[#0b3954de] border-[#0b3954]"
+              (click)="submitNotification($event,reserveData.id)"
             />
           </div>
         </td>

@@ -58,4 +58,9 @@ export class ReserveService {
     const url = `${this.apiBaseUrl}/${RESERVE.UPDATE_ATTENDANCE}/${id}`;
     return this.httpClient.put<AttendanceResponse>(url, attendance);
   }
+
+  sendNotification(reserveId: number): Observable<string> {
+    const url = `${this.apiBaseUrl}/${RESERVE.SEND_NOTIFICATION}/${reserveId}`;
+    return this.httpClient.get(url, { responseType: 'text' });
+  }
 }

@@ -28,6 +28,11 @@ import { FormErrorComponent } from '../../shared/components/form-errors/form-err
 import { State, states } from '@shared/data/states';
 import { ReserveStateService } from '@pages/reserve/reserve-state.service';
 import { TitleComponent } from '@shared/utils/title/title.component';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-view-all-reserves',
@@ -42,16 +47,19 @@ import { TitleComponent } from '@shared/utils/title/title.component';
     SelectModule,
     TagModule,
     CommonModule,
-    InputIcon,
-    IconField,
     ButtonModule,
     DialogModule,
     DividerModule,
     FormErrorComponent,
     DatePickerModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    ConfirmDialogModule,
+    ToastModule,
   ],
   templateUrl: './view-all-reserves.component.html',
   styleUrl: './view-all-reserves.component.css',
+  providers: [ConfirmationService, MessageService],
 })
 export class ViewAllReservesComponent implements OnInit {
   toastr = inject(ToastrService);
@@ -74,7 +82,8 @@ export class ViewAllReservesComponent implements OnInit {
   reserveId!: number;
 
   @ViewChild('dt2') dt2!: Table;
-  constructor() {}
+
+  constructor(private readonly confirmationService: ConfirmationService) {}
 
   ngOnInit(): void {
     this.reserveStateService.reservesByDay$.subscribe((data) => {
@@ -90,7 +99,7 @@ export class ViewAllReservesComponent implements OnInit {
     const dd = String(today.getDate()).padStart(2, '0');
     const todayString = `${yyyy}-${mm}-${dd}`;
 
-    this.reserveStateService.getAllReservationsByDate(todayString);
+    this.reserveStateService.getAllReservationsByDate('2025-06-28');
   }
 
   clear(table: Table) {
@@ -134,16 +143,18 @@ export class ViewAllReservesComponent implements OnInit {
       };
       console.log('Attendance Request:', attendanceRequest);
 
-      this.reserveService.updateAttendance(this.reserve.id, attendanceRequest).subscribe({
-        next: (response) => {
-          this.reserveStateService.updateAttended(this.reserve.id, response);
-          this.toastr.success(
-            'Se actualizó la asistencia correctamente',
-            'Asistencia actualizada'
-          );
-          this.closeModalAttendance();
-        },
-      });
+      this.reserveService
+        .updateAttendance(this.reserve.id, attendanceRequest)
+        .subscribe({
+          next: (response) => {
+            this.reserveStateService.updateAttended(this.reserve.id, response);
+            this.toastr.success(
+              'Se actualizó la asistencia correctamente',
+              'Asistencia actualizada'
+            );
+            this.closeModalAttendance();
+          },
+        });
     } else {
       this.attendanceForm.markAllAsTouched();
     }
@@ -151,5 +162,45 @@ export class ViewAllReservesComponent implements OnInit {
 
   closeModalAttendance() {
     this.modalAttendance = false;
+  }
+
+  submitNotification(event: Event, id: number) {
+    const reserve = this.reserveData.find((reserve) => reserve.id === id);
+    if (reserve) {
+      this.confirmationService.confirm({
+        target: event.target as EventTarget,
+        message: `¿Te gustaría enviar el recordatorio al cliente ${reserve.userSimpleResponse.username}?`,
+        header: 'Recordatorio',
+        icon: 'pi pi-exclamation-triangle',
+        rejectLabel: 'Cancelar',
+        rejectButtonProps: {
+          label: 'Cancelar',
+          severity: 'secondary',
+          outlined: true,
+        },
+        acceptButtonProps: {
+          label: 'Aceptar',
+        },
+        accept: () => {
+          this.reserveService.sendNotification(reserve.id).subscribe({
+            error: (error) => {
+              this.toastr.error(
+                `Error al enviar el recordatorio: ${error.error.message}`,
+                'Error'
+              );
+            },
+          });
+          this.toastr.success(
+            `Se ha enviado el recordatorio al cliente ${reserve.userSimpleResponse.username}`,
+            'Recordatorio'
+          );
+        },
+      });
+    } else {
+      this.toastr.error(
+        'No se encontró la reserva para el cliente especificado.',
+        'Error'
+      );
+    }
   }
 }

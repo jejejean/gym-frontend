@@ -19,6 +19,7 @@ export const RESERVE = {
   UPDATE: `${RESERVE_API_ENDPOINTS}/update`,
   UPDATE_ATTENDANCE: `${RESERVE_API_ENDPOINTS}/update/attendance`,
   DELETE: `${RESERVE_API_ENDPOINTS}/delete`,
+  SEND_NOTIFICATION: `${RESERVE_API_ENDPOINTS}/resendReservationReminder`,
 };
 
 export const USER = {
