@@ -1,1 +1,60 @@
-<p>dashboard works!</p>
+<div class="pt-4">
+  <app-title title="Dashboard"></app-title>
+</div>
+
+<div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-3 col-span-2 gap-4">
+    <div
+      class="bg-white shadow-lg border border-300 rounded-2xl p-4 grid justify-center"
+    >
+      <span>Total de Reservas</span>
+      <span class="text-center font-bold text-6xl">{{ reservations }}</span>
+    </div>
+    <div
+      class="bg-white shadow-lg border border-300 rounded-2xl p-4 flex flex-col items-center"
+    >
+      <span>Asistencia</span>
+      <span class="text-center font-bold text-6xl"
+        >{{ attendancePercent }}%</span
+      >
+      <span class="text-sm text-gray-500"
+        >({{ attendancePercentage.asistencia }} de
+        {{
+          attendancePercentage.asistencia + attendancePercentage.inasistencia
+        }})</span
+      >
+    </div>
+    <div
+      class="bg-white shadow-lg border border-300 rounded-2xl p-4 grid justify-center"
+    >
+      <span>Total de Clientes</span>
+      <span class="text-center font-bold text-6xl">{{ TotalClients }}</span>
+    </div>
+  </div>
+
+  <div class="bg-white shadow-lg border border-300 rounded-2xl p-4">
+    <p-chart
+      type="doughnut"
+      [data]="reservationsByTypeMachineData"
+      [options]="reservationsByTypeMachineOptions"
+      class="md:w-[20rem]"
+    />
+  </div>
+  <div class="bg-white shadow-lg border border-300 rounded-2xl p-4">
+    <p-chart
+      type="bar"
+      [data]="reservationsByMachineData"
+      [options]="reservationsByMachineOptions"
+      class="h-[30rem]"
+    />
+  </div>
+
+  <div class="bg-white shadow-lg border border-300 rounded-2xl p-4 col-span-2">
+    <p-chart
+      type="bar"
+      [data]="reservationsByMonthData"
+      [options]="reservationsByMonthOptions"
+      class="h-[30rem]"
+    />
+  </div>
+</div>

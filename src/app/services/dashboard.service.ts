@@ -38,4 +38,9 @@ export class DashboardService {
     const url = `${this.apiBaseUrl}/${DASHBOARD.RESERVATION_BY_TIPE_MACHINE}`;
     return this.httpClient.get<any>(url);
   }
+  
+  getTotalClients(): Observable<any> {
+    const url = `${this.apiBaseUrl}/${DASHBOARD.GET_CLIENTS}`;
+    return this.httpClient.get<any>(url);
+  }
 }
