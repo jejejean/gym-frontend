@@ -136,11 +136,7 @@ export class ViewAllReservesComponent implements OnInit {
 
       this.reserveService.updateAttendance(this.reserve.id, attendanceRequest).subscribe({
         next: (response) => {
-          this.reserveStateService.updateAttended(this.reserve.id, {
-            id: this.reserve.id,
-            attendanceRequest: response,
-          });
-
+          this.reserveStateService.updateAttended(this.reserve.id, response);
           this.toastr.success(
             'Se actualizó la asistencia correctamente',
             'Asistencia actualizada'

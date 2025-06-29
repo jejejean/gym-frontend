@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import {
+  AttendanceResponse,
   ReserveByDayResponse,
   ReserveResponse,
   ReserveSimpleRequest,
@@ -56,13 +57,13 @@ export class ReserveStateService {
     }
   }
 
-  updateAttended(id: number, reserveResponse: ReserveSimpleRequest): void {
+  updateAttended(id: number, attendanceResponse: AttendanceResponse): void {
     const reserve = this.reserveByDaySubject.getValue();
     const index = reserve.findIndex((reserve) => reserve.id === id);
     if (index !== -1) {
       reserve[index] = {
         ...reserve[index],
-        ...reserveResponse,
+        attendanceResponse: attendanceResponse,
       };
       this.reserveByDaySubject.next(reserve);
     }
