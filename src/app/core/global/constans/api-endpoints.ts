@@ -2,6 +2,7 @@ export const REQUEST_MAPPING = 'api/v1';
 export const USER_API_ENDPOINTS = `${REQUEST_MAPPING}/user`;
 export const RESERVE_API_ENDPOINTS = `${REQUEST_MAPPING}/reserve`;
 export const TIME_SLOT_API_ENDPOINTS = `${REQUEST_MAPPING}/timeSlot`;
+export const DASHBOARD_API_ENDPOINTS = `${REQUEST_MAPPING}/dashboard`;
 
 export const LOGIN_API_ENDPOINTS = {
   REQUEST_MAPPING: 'auth',
@@ -37,4 +38,12 @@ export const TIME_SLOT = {
   MACHINE_BY_DATE: `${TIME_SLOT_API_ENDPOINTS}/machines/by-date`,
   TIME_SLOT_BY_DATE: `${TIME_SLOT_API_ENDPOINTS}/timeSlots/by-date`,
   CAPACITY: `${TIME_SLOT_API_ENDPOINTS}/capacity`,
+}
+
+export const DASHBOARD = {
+ GET_REVERVATIONS: `${DASHBOARD_API_ENDPOINTS}/totalReserves`,
+ ATTENDANCE_PERCENTAGE: `${DASHBOARD_API_ENDPOINTS}/attendanceSummary`,
+ RESERVATION_BY_MONTH: `${DASHBOARD_API_ENDPOINTS}/reservesByMonth`,
+ RESERVATIONS_BY_MACHINE: `${DASHBOARD_API_ENDPOINTS}/reservesByMachine`,
+ RESERVATION_BY_TIPE_MACHINE: `${DASHBOARD_API_ENDPOINTS}/reservesByTipeMachine`,
 }
