@@ -99,7 +99,8 @@ export class ViewAllReservesComponent implements OnInit {
     const dd = String(today.getDate()).padStart(2, '0');
     const todayString = `${yyyy}-${mm}-${dd}`;
 
-    this.reserveStateService.getAllReservationsByDate('2025-06-28');
+    //this.reserveStateService.getAllReservationsByDate('2025-06-28');
+    this.reserveStateService.getAllReservationsByDate(todayString);
   }
 
   clear(table: Table) {
