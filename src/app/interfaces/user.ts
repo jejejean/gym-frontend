@@ -32,6 +32,7 @@ export interface UserResponse {
   phone: string;
   status: string;
   userType: string;
+  active: boolean
   userProfileResponse: UserProfileResponse;
   userPlansResponse: UserPlansResponse[];
 }
@@ -65,4 +66,10 @@ export interface UserSimpleResponse {
   phone: string;
   status: string;
   userProfileResponse: UserProfileResponse;
+}
+
+export interface UpdatePasswordRequest {
+  userId: number;
+  newPassword: string;
+  confirmPassword: string;
 }

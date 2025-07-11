@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { LoginService } from './login.service';
 import { LoginRequest, LoginResponse } from '../../interfaces/login';
+import { UserResponse } from '@interfaces/user';
 
 @Injectable({
   providedIn: 'root'

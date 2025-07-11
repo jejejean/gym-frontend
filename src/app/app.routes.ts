@@ -11,6 +11,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'change-pass',
+    title: 'Cambiar Contraseña',
+    loadComponent: () =>
+      import('./pages/change-pass/change-pass.component').then(
+        (m) => m.ChangePassComponent
+      ),
+  },
+  {
     path: 'main',
     loadComponent: () =>
       import('./pages/main/main.component').then((m) => m.MainComponent),

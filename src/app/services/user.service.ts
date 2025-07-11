@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { USER } from '@core/global/constans/api-endpoints';
 import { environment } from '@environments/environments.dev';
-import { UserRequest, UserResponse } from '@interfaces/user';
+import {
+  UpdatePasswordRequest,
+  UserRequest,
+  UserResponse,
+} from '@interfaces/user';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -24,7 +28,7 @@ export class UserService {
     const url = `${this.apiBaseUrl}/${USER.GET_ALL_BY_USER_TYPE}`;
     return this.httpClient.get<UserResponse[]>(url);
   }
-  
+
   getUserById(id: number): Observable<UserResponse> {
     const url = `${this.apiBaseUrl}/${USER.GET_BY_ID}/${id}`;
     return this.httpClient.get<UserResponse>(url);
@@ -49,5 +53,17 @@ export class UserService {
     const url = `${this.apiBaseUrl}/${USER.DELETE}/${id}`;
     return this.httpClient.delete(url, { responseType: 'text' });
   }
-    
+
+  updatePassword(request: UpdatePasswordRequest): Observable<string> {
+    const url = `${this.apiBaseUrl}/auth/update-password`;
+    return this.httpClient.post<string>(
+      url,
+      {
+        userId: request.userId,
+        confirmPassword: request.confirmPassword,
+        newPassword: request.newPassword,
+      },
+      { responseType: 'text' as 'json' }
+    );
+  }
 }
